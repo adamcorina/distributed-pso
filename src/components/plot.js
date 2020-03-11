@@ -54,7 +54,7 @@ const FunctionPlotter = ({ pso }) => {
     renderer.setClearColor(0xdddddd, 1);
     renderer.clear();
 
-    camera.position.set(0, 0, 60);
+    camera.position.set(1, 1, 60);
     scene.add(camera);
 
     const light = new THREE.PointLight(0xffffff);
