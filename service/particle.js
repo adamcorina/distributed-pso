@@ -3,7 +3,6 @@ function random(min, max) {
 }
 
 export default class Particle {
-    
   constructor(fitnessFunction, id) {
     this.id = id;
     this.position = [];
@@ -15,9 +14,11 @@ export default class Particle {
     this.fitnessFunction = fitnessFunction;
 
     for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
-      this.position.push(
-        random(this.fitnessFunction.dimensions[i].min, this.fitnessFunction.dimensions[i].max)
+      const randomNumber = random(
+        this.fitnessFunction.dimensions[i].min,
+        this.fitnessFunction.dimensions[i].max
       );
+      this.position.push(randomNumber);
       this.bestPosition.push(this.position[i]);
     }
 
@@ -25,7 +26,9 @@ export default class Particle {
 
     this.velocity = [];
     for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
-      let d = this.fitnessFunction.dimensions[i].max - this.fitnessFunction.dimensions[i].min;
+      let d =
+        this.fitnessFunction.dimensions[i].max -
+        this.fitnessFunction.dimensions[i].min;
       this.velocity.push(random(-d, d));
     }
   }
@@ -40,8 +43,12 @@ export default class Particle {
     }
   }
 
-  movePosition(socialBestPosition, inertiaWeight, cognitiveWeight, socialWeight) {
-
+  movePosition(
+    socialBestPosition,
+    inertiaWeight,
+    cognitiveWeight,
+    socialWeight
+  ) {
     for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
       let vMomentum = inertiaWeight * this.velocity[i];
 
@@ -53,6 +60,13 @@ export default class Particle {
 
       this.velocity[i] = vMomentum + vCognitive + vSocial;
       this.position[i] = this.position[i] + this.velocity[i];
+
+      if (this.position[i] > this.fitnessFunction.dimensions[i].max) {
+        this.position[i] = this.fitnessFunction.dimensions[i].max;
+      }
+      if (this.position[i] < this.fitnessFunction.dimensions[i].min) {
+        this.position[i] = this.fitnessFunction.dimensions[i].min;
+      }
     }
   }
 }

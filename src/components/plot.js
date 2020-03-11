@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 
-const WIDTH = 2000,
-  HEIGHT = 1000,
-  VIEW_ANGLE = 50,
+const WIDTH = window.innerWidth,
+  HEIGHT = window.innerHeight,
+  VIEW_ANGLE = 90,
   ASPECT = WIDTH / HEIGHT,
-  NEAR = 0.1,
-  FAR = 100;
+  NEAR = 50,
+  FAR = 0;
 
 const FunctionPlotter = ({ pso }) => {
   let [scene] = useState(new THREE.Scene());
@@ -28,24 +28,21 @@ const FunctionPlotter = ({ pso }) => {
   useEffect(() => {
     if (canvasParticles.length) {
       const intervalId = setInterval(() => {
-        if (pso.iterationNum < 100) {
+        if (pso.iterationNum < 10) {
           pso.iterate();
-          canvasParticles.forEach(particle=>{
-              particle.position.x+=1;
-          })
+          for (let i = 0; i < pso.particles.length; i++) {
+              if(canvasParticles[i]){
+                  canvasParticles[i].position.x = pso.particles[i].position[0];
+                  canvasParticles[i].position.y = pso.particles[i].position[1];
+                  canvasParticles[i].position.z = pso.particles[i].fitness;
+              }
+          }
         } else {
           clearInterval(intervalId);
         }
-      }, 50);
+      }, 500);
     }
   }, [canvasParticles]);
-
-  const onWindowResize = () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  };
 
   const init = () => {
     const container = document.getElementById("functionPloterContainer");
@@ -55,12 +52,15 @@ const FunctionPlotter = ({ pso }) => {
     renderer.setClearColor(0xdddddd, 1);
     renderer.clear();
 
-    camera.position.set(5, 5, 50);
+    camera.position.set(0, 0, 60);
     scene.add(camera);
 
     const light = new THREE.PointLight(0xffffff);
     light.position.set(0, 100, 100);
     scene.add(light);
+
+    const axesHelper = new THREE.AxesHelper( 100 );
+    scene.add( axesHelper );
   };
 
   const animate = () => {
@@ -75,7 +75,7 @@ const FunctionPlotter = ({ pso }) => {
   const initParticles = particles => {
     const particlesToAdd = [];
     particles.forEach(particle => {
-      const particleToAdd = createParticle(...particle.position);
+      const particleToAdd = createParticle(...particle.position, particle.fitness);
       particlesToAdd.push(particleToAdd);
       scene.add(particleToAdd);
     });
@@ -89,6 +89,13 @@ const FunctionPlotter = ({ pso }) => {
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
     return mesh;
+  };
+
+  const onWindowResize = () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
   };
 
   return <div id={"functionPloterContainer"} />;

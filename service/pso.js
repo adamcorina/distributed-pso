@@ -7,8 +7,8 @@ export default class PSO {
 
     this.iterationNum = 0;
 
-    this.inertiaWeight = 0.7;
-    this.cognitiveWeight = 2.0;
+    this.inertiaWeight = 0.85;
+    this.cognitiveWeight = 0.1;
     this.socialWeight = 0.1;
 
     this.particles = particles;
@@ -26,7 +26,6 @@ export default class PSO {
       this.particles[i].movePosition(this.bestPosition, this.inertiaWeight, this.cognitiveWeight, this.socialWeight);
 	  this.particles[i].computeFitness();
 	}
-	
     this.updateGlobalBest();
 	this.iterationNum++;
   }
