@@ -6,8 +6,8 @@ const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
   VIEW_ANGLE = 45,
   ASPECT = WIDTH / HEIGHT,
-  NEAR = 0.1,
-  FAR = 100,
+  NEAR = 10,
+  FAR = 120,
   segments = 20;
 
 const FunctionPlotter = ({ pso }) => {
@@ -55,14 +55,14 @@ const FunctionPlotter = ({ pso }) => {
     renderer.setClearColor(0xdddddd, 1);
     renderer.clear();
 
-    camera.position.set(3, -3, 60);
+    camera.position.set(3, -3, 115);
     scene.add(camera);
 
     const light = new THREE.PointLight(0xffffff);
     light.position.set(0, 100, 100);
     scene.add(light);
 
-    const axesHelper = new THREE.AxesHelper(100);
+    const axesHelper = new THREE.AxesHelper(120);
     scene.add(axesHelper);
 
     new OrbitControls(camera, renderer.domElement);
