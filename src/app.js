@@ -8,7 +8,7 @@ const App = () => {
   const [pso, setPSO] = useState(null);
 
   function initializePopulation() {
-    const numParticles = 10;
+    const numParticles = 100;
     let particles = [];
     const fitnessFunction = new FF_Sphere();
 

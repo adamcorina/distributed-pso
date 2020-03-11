@@ -30,7 +30,7 @@ const FunctionPlotter = ({ pso }) => {
   useEffect(() => {
     if (canvasParticles.length) {
       const intervalId = setInterval(() => {
-        if (pso.iterationNum < 10) {
+        if (pso.iterationNum < 200) {
           pso.iterate();
           for (let i = 0; i < pso.particles.length; i++) {
               if(canvasParticles[i]){
@@ -42,7 +42,7 @@ const FunctionPlotter = ({ pso }) => {
         } else {
           clearInterval(intervalId);
         }
-      }, 500);
+      }, 200);
     }
   }, [canvasParticles]);
 
