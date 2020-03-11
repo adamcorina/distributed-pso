@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
+const OrbitControls = require('three-orbit-controls')(THREE);
+
 
 const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
@@ -61,6 +63,8 @@ const FunctionPlotter = ({ pso }) => {
 
     const axesHelper = new THREE.AxesHelper( 100 );
     scene.add( axesHelper );
+
+    new OrbitControls( camera, renderer.domElement );
   };
 
   const animate = () => {
