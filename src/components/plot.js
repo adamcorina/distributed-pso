@@ -92,7 +92,7 @@ const FunctionPlotter = ({ pso }) => {
   };
 
   const createParticle = (x, y, z) => {
-    const geometry = new THREE.SphereGeometry(1, 16, 16);
+    const geometry = new THREE.SphereGeometry(0.25, 16, 16);
     const material = new THREE.MeshLambertMaterial({ color: 0x00ccff });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
@@ -112,8 +112,7 @@ const FunctionPlotter = ({ pso }) => {
       x = xRange * x + xMin;
       y = yRange * y + yMin;
       var z = zFunc(x, y);
-      if (isNaN(z)) target.set(0, 0, 0 );
-      else target.set(x, y, z);
+      target.set(x, y, z);
     };
 
     const graphGeometry = new THREE.ParametricGeometry(
