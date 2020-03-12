@@ -4,10 +4,10 @@ const OrbitControls = require("three-orbit-controls")(THREE);
 
 const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
-  VIEW_ANGLE = 45,
+  VIEW_ANGLE = 50,
   ASPECT = WIDTH / HEIGHT,
   NEAR = 0.1,
-  FAR = 3200,
+  FAR = 100000,
   segments = 80;
 
 const FunctionPlotter = ({ pso }) => {
@@ -24,7 +24,6 @@ const FunctionPlotter = ({ pso }) => {
       init();
       animate();
       createGraph();
-      initParticles(pso.particles);
     }
   }, [pso]);
 
@@ -54,16 +53,11 @@ const FunctionPlotter = ({ pso }) => {
     renderer.setSize(WIDTH, HEIGHT);
     renderer.setClearColor(0xdddddd, 1);
     renderer.clear();
-
-    camera.position.set(3, -3, 3200);
     scene.add(camera);
 
     const light = new THREE.PointLight(0xffffff);
     light.position.set(0, 100, 100);
     scene.add(light);
-
-    const axesHelper = new THREE.AxesHelper(1600);
-    scene.add(axesHelper);
 
     new OrbitControls(camera, renderer.domElement);
   };
@@ -77,12 +71,13 @@ const FunctionPlotter = ({ pso }) => {
     renderer.render(scene, camera);
   };
 
-  const initParticles = particles => {
+  const initParticles = (particles, dimension) => {
     const particlesToAdd = [];
     particles.forEach(particle => {
       const particleToAdd = createParticle(
         ...particle.position,
-        particle.fitness
+        particle.fitness,
+        dimension
       );
       particlesToAdd.push(particleToAdd);
       scene.add(particleToAdd);
@@ -91,8 +86,8 @@ const FunctionPlotter = ({ pso }) => {
     renderCanvas();
   };
 
-  const createParticle = (x, y, z) => {
-    const geometry = new THREE.SphereGeometry(5, 16, 16);
+  const createParticle = (x, y, z, dimension) => {
+    const geometry = new THREE.SphereGeometry(dimension, 16, 16);
     const material = new THREE.MeshLambertMaterial({ color: 0x00ccff });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
@@ -162,6 +157,14 @@ const FunctionPlotter = ({ pso }) => {
     const graphMesh = new THREE.Mesh(graphGeometry, wireMaterial);
     graphMesh.doubleSided = true;
     scene.add(graphMesh);
+
+    fitCameraToObject(camera, graphGeometry, 1.3);
+
+
+    const size = graphGeometry.boundingBox.getSize();
+    const maxDim = Math.max(size.x, size.y, size.z);
+
+    initParticles(pso.particles, maxDim * 0.003);
   }
 
   const onWindowResize = () => {
@@ -169,6 +172,29 @@ const FunctionPlotter = ({ pso }) => {
     camera.updateProjectionMatrix();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
+  };
+
+  const fitCameraToObject = function(camera, object) {
+    const center = object.boundingBox.getCenter();
+    const size = object.boundingBox.getSize();
+
+    // get the max side of the bounding box (fits to width OR height as needed )
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
+    cameraZ *= 1.3; // zoom out a little so that objects don't fill the screen
+
+    camera.position.z = cameraZ;
+
+    const minZ = object.boundingBox.min.z;
+    const cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+
+    camera.far = cameraToFarEdge * 3;
+    camera.updateProjectionMatrix();
+    camera.lookAt(center);
+
+    const axesHelper = new THREE.AxesHelper(maxDim);
+    scene.add(axesHelper);
   };
 
   return <div id={"functionPloterContainer"} />;
