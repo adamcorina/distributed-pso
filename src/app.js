@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FF_Sphere, FF_Rastrigin } from "../service/functions";
+import { FF_Sphere, FF_Rastrigin, FF_Schwefel } from "../service/functions";
 import PSO from "../service/pso";
 import Particle from "../service/particle";
 import FunctionPlotter from "./components/plot";
@@ -10,7 +10,7 @@ const App = () => {
   function initializePopulation() {
     const numParticles = 100;
     let particles = [];
-    const fitnessFunction = new FF_Rastrigin();
+    const fitnessFunction = new FF_Schwefel();
 
     for (let i = 0; i < numParticles; i++) {
       const uniqueId = particles.length;

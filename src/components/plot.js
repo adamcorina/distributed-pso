@@ -6,9 +6,9 @@ const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
   VIEW_ANGLE = 45,
   ASPECT = WIDTH / HEIGHT,
-  NEAR = 10,
-  FAR = 120,
-  segments = 20;
+  NEAR = 0.1,
+  FAR = 3200,
+  segments = 80;
 
 const FunctionPlotter = ({ pso }) => {
   let [scene] = useState(new THREE.Scene());
@@ -31,7 +31,7 @@ const FunctionPlotter = ({ pso }) => {
   useEffect(() => {
     if (canvasParticles.length) {
       const intervalId = setInterval(() => {
-        if (pso.iterationNum < 200) {
+        if (pso.iterationNum < 500) {
           pso.iterate();
           for (let i = 0; i < pso.particles.length; i++) {
             if (canvasParticles[i]) {
@@ -55,14 +55,14 @@ const FunctionPlotter = ({ pso }) => {
     renderer.setClearColor(0xdddddd, 1);
     renderer.clear();
 
-    camera.position.set(3, -3, 115);
+    camera.position.set(3, -3, 3200);
     scene.add(camera);
 
     const light = new THREE.PointLight(0xffffff);
     light.position.set(0, 100, 100);
     scene.add(light);
 
-    const axesHelper = new THREE.AxesHelper(120);
+    const axesHelper = new THREE.AxesHelper(1600);
     scene.add(axesHelper);
 
     new OrbitControls(camera, renderer.domElement);
@@ -92,7 +92,7 @@ const FunctionPlotter = ({ pso }) => {
   };
 
   const createParticle = (x, y, z) => {
-    const geometry = new THREE.SphereGeometry(0.25, 16, 16);
+    const geometry = new THREE.SphereGeometry(5, 16, 16);
     const material = new THREE.MeshLambertMaterial({ color: 0x00ccff });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
