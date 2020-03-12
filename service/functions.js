@@ -7,7 +7,7 @@ const FF_Sphere = function() {
   this.compute = function(x, y) {
     const f = x * x + y * y;
     return f;
-  }
+  };
 };
 
 const FF_Rastrigin = function() {
@@ -23,7 +23,7 @@ const FF_Rastrigin = function() {
       y * y -
       10 * (Math.cos(2 * Math.PI * x) + Math.cos(2 * Math.PI * y));
     return f;
-  }
+  };
 };
 
 const FF_Schwefel = function() {
@@ -31,15 +31,30 @@ const FF_Schwefel = function() {
     { min: -500, max: 500 },
     { min: -500, max: 500 }
   ];
-  
-  this.compute = function (x, y) {
-    const f = 418.9829 * 3 - (x * Math.sin(Math.sqrt(Math.abs(x))) + y * Math.sin(Math.sqrt(Math.abs(y))));
+
+  this.compute = function(x, y) {
+    const f =
+      418.9829 * 3 -
+      (x * Math.sin(Math.sqrt(Math.abs(x))) +
+        y * Math.sin(Math.sqrt(Math.abs(y))));
     return f;
-  }
-}
+  };
+};
+
+const FF_Umbrella = function() {
+  this.dimensions = [
+    { min: -0.5, max: 0.5},
+    { min: -0.5, max: 0.5 }
+  ];
+  this.compute = function(x, y) {
+    const f = Math.cos(x) * Math.cos(y) * Math.exp(-x * x - y * y);
+    return f;
+  };
+};
 
 module.exports = {
   FF_Sphere,
   FF_Rastrigin,
-  FF_Schwefel
+  FF_Schwefel,
+  FF_Umbrella
 };

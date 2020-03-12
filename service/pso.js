@@ -9,7 +9,7 @@ export default class PSO {
 
     this.inertiaWeight = 0.85;
     this.cognitiveWeight = 0.1;
-    this.socialWeight = 0.1;
+    this.socialWeight = 0.2;
 
     this.particles = particles;
 	this.updateGlobalBest();
