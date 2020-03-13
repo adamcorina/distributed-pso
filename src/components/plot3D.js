@@ -8,9 +8,11 @@ const WIDTH = window.innerWidth,
   ASPECT = WIDTH / HEIGHT,
   NEAR = 0.1,
   FAR = 100000,
-  segments = 80;
+  SEGMENTS = 80,
+  NUMBER_OF_ITERATIONS = 500,
+  TIME_BETWEEN_ITERATIONS = 200; //milliseconds
 
-const FunctionPlotter = ({ pso }) => {
+const FunctionPlotter3D = ({ pso }) => {
   let [scene] = useState(new THREE.Scene());
   let [renderer] = useState(new THREE.WebGLRenderer());
   let [camera] = useState(
@@ -29,11 +31,13 @@ const FunctionPlotter = ({ pso }) => {
 
   useEffect(() => {
     if (canvasParticles.length) {
+      // start iterations for population
       const intervalId = setInterval(() => {
-        if (pso.iterationNum < 500) {
+        if (pso.iterationNum < NUMBER_OF_ITERATIONS) {
           pso.iterate();
           for (let i = 0; i < pso.particles.length; i++) {
             if (canvasParticles[i]) {
+              // move plotted particles to their next position
               canvasParticles[i].position.x = pso.particles[i].position[0];
               canvasParticles[i].position.y = pso.particles[i].position[1];
               canvasParticles[i].position.z = pso.particles[i].fitness;
@@ -42,7 +46,7 @@ const FunctionPlotter = ({ pso }) => {
         } else {
           clearInterval(intervalId);
         }
-      }, 200);
+      }, TIME_BETWEEN_ITERATIONS);
     }
   }, [canvasParticles]);
 
@@ -103,6 +107,7 @@ const FunctionPlotter = ({ pso }) => {
     const xRange = xMax - xMin;
     const yRange = yMax - yMin;
     const zFunc = pso.fitnessFunction.compute;
+
     const meshFunction = function(x, y, target) {
       x = xRange * x + xMin;
       y = yRange * y + yMin;
@@ -112,12 +117,13 @@ const FunctionPlotter = ({ pso }) => {
 
     const graphGeometry = new THREE.ParametricGeometry(
       meshFunction,
-      segments,
-      segments,
+      SEGMENTS,
+      SEGMENTS,
       true
     );
 
     graphGeometry.computeBoundingBox();
+
     const zMin = graphGeometry.boundingBox.min.z;
     const zMax = graphGeometry.boundingBox.max.z;
     const zRange = zMax - zMin;
@@ -152,7 +158,7 @@ const FunctionPlotter = ({ pso }) => {
       transparent: true,
       opacity: 0.3
     });
-    wireMaterial.map.repeat.set(segments, segments);
+    wireMaterial.map.repeat.set(SEGMENTS, SEGMENTS);
 
     const graphMesh = new THREE.Mesh(graphGeometry, wireMaterial);
     graphMesh.doubleSided = true;
@@ -160,26 +166,18 @@ const FunctionPlotter = ({ pso }) => {
 
     fitCameraToObject(camera, graphGeometry, 1.3);
 
-
-    const size = graphGeometry.boundingBox.getSize();
-    const maxDim = Math.max(size.x, size.y, size.z);
-
-    initParticles(pso.particles, maxDim * 0.003);
+    initParticles(pso.particles, getMaxSizeBoundingBox(graphGeometry) * 0.003);
   }
 
-  const onWindowResize = () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  };
+  const getMaxSizeBoundingBox = (object) => {
+    const size = object.boundingBox.getSize();
+    return Math.max(size.x, size.y, size.z);
+  }
 
   const fitCameraToObject = function(camera, object) {
     const center = object.boundingBox.getCenter();
-    const size = object.boundingBox.getSize();
 
-    // get the max side of the bounding box (fits to width OR height as needed )
-    const maxDim = Math.max(size.x, size.y, size.z);
+    const maxDim = getMaxSizeBoundingBox(object);
     const fov = camera.fov * (Math.PI / 180);
     let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
     cameraZ *= 1.3; // zoom out a little so that objects don't fill the screen
@@ -197,7 +195,14 @@ const FunctionPlotter = ({ pso }) => {
     scene.add(axesHelper);
   };
 
+  const onWindowResize = () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  };
+
   return <div id={"functionPloterContainer"} />;
 };
 
-export default FunctionPlotter;
+export default FunctionPlotter3D;
