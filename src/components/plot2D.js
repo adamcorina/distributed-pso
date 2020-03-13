@@ -7,9 +7,7 @@ const WIDTH = window.innerWidth,
   ASPECT = WIDTH / HEIGHT,
   NEAR = 0.1,
   FAR = 10000,
-  SEGMENTS = 80,
-  NUMBER_OF_ITERATIONS = 500,
-  TIME_BETWEEN_ITERATIONS = 200; //milliseconds
+  SEGMENTS = 80;
 
 const FunctionPlotter2D = ({ pso }) => {
   let [scene] = useState(new THREE.Scene());
@@ -71,13 +69,40 @@ const FunctionPlotter2D = ({ pso }) => {
       SEGMENTS
     );
 
+    graphGeometry.computeBoundingBox();
+
     var material = new THREE.LineBasicMaterial({ color: 0x000000 });
 
     const line = new THREE.Line(graphGeometry, material);
     scene.add(line);
 
-    const axesHelper = new THREE.AxesHelper(100);
+    fitCameraToObject(camera, graphGeometry);
+  }
+
+  const fitCameraToObject = function(camera, object) {
+    const center = object.boundingBox.getCenter();
+
+    const maxDim = getMaxSizeBoundingBox(object);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
+    cameraZ *= 1.3; // zoom out a little so that objects don't fill the screen
+
+    camera.position.z = cameraZ;
+
+    const minZ = object.boundingBox.min.z;
+    const cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+
+    camera.far = cameraToFarEdge * 3;
+    camera.updateProjectionMatrix();
+    camera.lookAt(center);
+
+    const axesHelper = new THREE.AxesHelper(maxDim);
     scene.add(axesHelper);
+  };
+
+  const getMaxSizeBoundingBox = (object) => {
+    const size = object.boundingBox.getSize();
+    return Math.max(size.x, size.y, size.z);
   }
 
   const onWindowResize = () => {

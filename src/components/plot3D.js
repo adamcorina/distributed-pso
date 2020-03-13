@@ -8,11 +8,9 @@ const WIDTH = window.innerWidth,
   ASPECT = WIDTH / HEIGHT,
   NEAR = 0.1,
   FAR = 100000,
-  SEGMENTS = 80,
-  NUMBER_OF_ITERATIONS = 500,
-  TIME_BETWEEN_ITERATIONS = 200; //milliseconds
+  SEGMENTS = 80;
 
-const FunctionPlotter3D = ({ pso }) => {
+const FunctionPlotter3D = ({ pso, numberOfIterations, timeBetweenIterations }) => {
   let [scene] = useState(new THREE.Scene());
   let [renderer] = useState(new THREE.WebGLRenderer());
   let [camera] = useState(
@@ -33,7 +31,7 @@ const FunctionPlotter3D = ({ pso }) => {
     if (canvasParticles.length) {
       // start iterations for population
       const intervalId = setInterval(() => {
-        if (pso.iterationNum < NUMBER_OF_ITERATIONS) {
+        if (pso.iterationNum < numberOfIterations) {
           pso.iterate();
           for (let i = 0; i < pso.particles.length; i++) {
             if (canvasParticles[i]) {
@@ -46,7 +44,7 @@ const FunctionPlotter3D = ({ pso }) => {
         } else {
           clearInterval(intervalId);
         }
-      }, TIME_BETWEEN_ITERATIONS);
+      }, timeBetweenIterations);
     }
   }, [canvasParticles]);
 

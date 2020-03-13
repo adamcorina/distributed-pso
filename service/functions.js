@@ -52,14 +52,11 @@ const FF_Umbrella = function() {
   };
 };
 
-const FF_Weierstrass = function(n) {
-  this.dimensions = [{ min: 0, max: 100 }];
+const FF_2D = function() {
+  this.dimensions = [{ min: 0, max: 2 }];
   this.compute = function(x) {
-    sum = 0;
-    for (let i = 0; i < n; i++) {
-      sum += 1 / (Math.pow(2, i) * Math.sin(Math.pow(2, i) * x));
-    }
-    return sum;
+    const f = x * Math.sin(4 * Math.PI * Math.abs(x - 1));
+    return f;
   };
 };
 
@@ -68,5 +65,5 @@ module.exports = {
   FF_Rastrigin,
   FF_Schwefel,
   FF_Umbrella,
-  FF_Weierstrass
+  FF_2D
 };
