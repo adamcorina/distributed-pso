@@ -3,7 +3,6 @@ import {
   FF_Sphere,
   FF_Rastrigin,
   FF_Schwefel,
-  FF_Umbrella,
   FF_2D
 } from "../service/functions";
 import PSO from "../service/pso";
@@ -11,13 +10,13 @@ import Particle from "../service/particle";
 import FunctionPlotter3D from "./components/plot3D";
 import FunctionPlotter2D from "./components/plot2D";
 
-const NUMBER_OF_ITERATIONS = 500, TIME_BETWEEN_ITERATIONS = 200;
+const NUMBER_OF_ITERATIONS = 500, TIME_BETWEEN_ITERATIONS = 90;
 
 const App = () => {
   const [pso, setPSO] = useState(null);
 
   function initializePopulation() {
-    const numParticles = 100;
+    const numParticles = 5;
     let particles = [];
     const fitnessFunction = new FF_2D();
 
@@ -41,7 +40,7 @@ const App = () => {
   return pso.fitnessFunction.dimensions.length == 2 ? (
     <FunctionPlotter3D pso={pso} numberOfIterations={NUMBER_OF_ITERATIONS} timeBetweenIterations={TIME_BETWEEN_ITERATIONS}/>
   ) : (
-    <FunctionPlotter2D pso={pso} />
+    <FunctionPlotter2D pso={pso} numberOfIterations={NUMBER_OF_ITERATIONS} timeBetweenIterations={TIME_BETWEEN_ITERATIONS}/>
   );
 };
 

@@ -9,12 +9,13 @@ const WIDTH = window.innerWidth,
   FAR = 10000,
   SEGMENTS = 80;
 
-const FunctionPlotter2D = ({ pso }) => {
+const FunctionPlotter2D = ({ pso, numberOfIterations, timeBetweenIterations }) => {
   let [scene] = useState(new THREE.Scene());
   let [renderer] = useState(new THREE.WebGLRenderer());
   let [camera] = useState(
     new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
   );
+  let [canvasParticles, setCanvasParticles] = useState([]);
 
   useEffect(() => {
     if (pso) {
@@ -24,6 +25,26 @@ const FunctionPlotter2D = ({ pso }) => {
       createGraph();
     }
   }, [pso]);
+
+  useEffect(() => {
+    if (canvasParticles.length) {
+      // start iterations for population
+      const intervalId = setInterval(() => {
+        if (pso.iterationNum < numberOfIterations) {
+          pso.iterate();
+          for (let i = 0; i < pso.particles.length; i++) {
+            if (canvasParticles[i]) {
+              // move plotted particles to their next position
+              canvasParticles[i].position.x = pso.particles[i].position[0];
+              canvasParticles[i].position.y = pso.particles[i].fitness;
+            }
+          }
+        } else {
+          clearInterval(intervalId);
+        }
+      }, timeBetweenIterations);
+    }
+  }, [canvasParticles]);
 
   const init = () => {
     const container = document.getElementById("functionPloterContainer");
@@ -48,6 +69,29 @@ const FunctionPlotter2D = ({ pso }) => {
 
   const renderCanvas = () => {
     renderer.render(scene, camera);
+  };
+
+  const initParticles = (particles, dimension) => {
+    const particlesToAdd = [];
+    particles.forEach(particle => {
+      const particleToAdd = createParticle(
+        ...particle.position,
+        particle.fitness,
+        dimension
+      );
+      particlesToAdd.push(particleToAdd);
+      scene.add(particleToAdd);
+    });
+    setCanvasParticles(particlesToAdd);
+    renderCanvas();
+  };
+
+  const createParticle = (x, y, dimension) => {
+    const geometry = new THREE.SphereGeometry(dimension, 16, 16);
+    const material = new THREE.MeshLambertMaterial({ color: 0x00ccff });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, 0);
+    return mesh;
   };
 
   function createGraph() {
@@ -77,6 +121,8 @@ const FunctionPlotter2D = ({ pso }) => {
     scene.add(line);
 
     fitCameraToObject(camera, graphGeometry);
+
+    initParticles(pso.particles, getMaxSizeBoundingBox(graphGeometry) * 0.01);
   }
 
   const fitCameraToObject = function(camera, object) {
@@ -85,7 +131,6 @@ const FunctionPlotter2D = ({ pso }) => {
     const maxDim = getMaxSizeBoundingBox(object);
     const fov = camera.fov * (Math.PI / 180);
     let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
-    cameraZ *= 1.3; // zoom out a little so that objects don't fill the screen
 
     camera.position.z = cameraZ;
 
