@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
+import {eventBus} from "../event-bus/eventBus";
 
 const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
@@ -33,6 +34,7 @@ const FunctionPlotter3D = ({ pso, numberOfIterations, timeBetweenIterations }) =
       const intervalId = setInterval(() => {
         if (pso.iterationNum < numberOfIterations) {
           pso.iterate();
+          eventBus.$emit('iteration');
           for (let i = 0; i < pso.particles.length; i++) {
             if (canvasParticles[i]) {
               // move plotted particles to their next position

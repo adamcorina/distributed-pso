@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
+import { eventBus } from "../event-bus/eventBus";
 
 const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
@@ -9,7 +10,11 @@ const WIDTH = window.innerWidth,
   FAR = 10000,
   SEGMENTS = 80;
 
-const FunctionPlotter2D = ({ pso, numberOfIterations, timeBetweenIterations }) => {
+const FunctionPlotter2D = ({
+  pso,
+  numberOfIterations,
+  timeBetweenIterations
+}) => {
   let [scene] = useState(new THREE.Scene());
   let [renderer] = useState(new THREE.WebGLRenderer());
   let [camera] = useState(
@@ -32,6 +37,7 @@ const FunctionPlotter2D = ({ pso, numberOfIterations, timeBetweenIterations }) =
       const intervalId = setInterval(() => {
         if (pso.iterationNum < numberOfIterations) {
           pso.iterate();
+          eventBus.$emit("iteration");
           for (let i = 0; i < pso.particles.length; i++) {
             if (canvasParticles[i]) {
               // move plotted particles to their next position
@@ -122,7 +128,7 @@ const FunctionPlotter2D = ({ pso, numberOfIterations, timeBetweenIterations }) =
 
     fitCameraToObject(camera, graphGeometry);
 
-    initParticles(pso.particles, getMaxSizeBoundingBox(graphGeometry) * 0.01);
+    initParticles(pso.particles, getMaxSizeBoundingBox(graphGeometry) * 0.005);
   }
 
   const fitCameraToObject = function(camera, object) {
@@ -145,10 +151,10 @@ const FunctionPlotter2D = ({ pso, numberOfIterations, timeBetweenIterations }) =
     scene.add(axesHelper);
   };
 
-  const getMaxSizeBoundingBox = (object) => {
+  const getMaxSizeBoundingBox = object => {
     const size = object.boundingBox.getSize();
     return Math.max(size.x, size.y, size.z);
-  }
+  };
 
   const onWindowResize = () => {
     camera.aspect = window.innerWidth / window.innerHeight;
