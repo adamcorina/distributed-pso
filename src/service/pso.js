@@ -18,7 +18,7 @@ export default class PSO {
   }
 
   updateColaborativeBest(coordinates) {
-    console.log("updating colaborative best", coordinates);
+    console.log("updating colaborative best");
     this.colaborativeBestPosition = [...coordinates];
   }
 
@@ -29,6 +29,7 @@ export default class PSO {
   introduceColaborativeBest() {
     const bestToIntroduce = [...this.colaborativeBestPosition];
     if (this.bestPosition.slice(-1) > bestToIntroduce.slice(-1)) {
+      console.log('replaced particle');
       const smallestIndex = indexOfLargest(this.particles);
       this.particles[smallestIndex].fitness = bestToIntroduce.pop();
       this.particles[smallestIndex].position = bestToIntroduce;
@@ -66,14 +67,13 @@ export default class PSO {
   }
 
   updateGlobalBest() {
-    const bestFitness = this.bestPosition ? this.bestPosition.slice(-1) : Infinity;
     this.bestPosition = [
       ...this.particles[0].bestPosition,
       this.particles[0].bestFitness
     ];
 
     for (let i = 1; i < this.particles.length; i++) {
-      if (this.particles[i].bestFitness < bestFitness) {
+      if (this.particles[i].bestFitness < this.bestPosition.slice(-1)) {
         this.bestPosition = [
           ...this.particles[i].bestPosition,
           this.particles[i].bestFitness

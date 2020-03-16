@@ -18,7 +18,7 @@ require("gun/sea");
 import "./app.css";
 
 const NUMBER_OF_ITERATIONS = 500,
-  TIME_BETWEEN_ITERATIONS = 5000;
+  TIME_BETWEEN_ITERATIONS = 500;
 
 const App = () => {
   const [pso, setPSO] = useState(null);

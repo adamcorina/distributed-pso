@@ -8,12 +8,11 @@ const TopParticles = ({ pso }) => {
   useEffect(() => {
     eventBus.$on("iteration", () => {
       const values = pso.particles.map(particle => [
-        ...particle.position,
-        particle.fitness
+        ...particle.bestPosition,
+        particle.bestFitness
       ]);
-      setTopValues(
-        values.sort((a, b) => a.slice(-1) - b.slice(-1)).slice(0, 3)
-      );
+      values.sort((a, b) => a.slice(-1) - b.slice(-1));
+      setTopValues(values.slice(0, 3));
     });
   }, []);
 
