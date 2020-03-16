@@ -36,9 +36,9 @@ export default class PSO {
       this.particles[smallestIndex].bestFitness = this.particles[
         smallestIndex
       ].fitness;
-      this.particles[smallestIndex].bestPosition = this.particles[
+      this.particles[smallestIndex].bestPosition = [...this.particles[
         smallestIndex
-      ].position;
+      ].position];
       this.particles[smallestIndex].velocity = new Array(this.fitnessFunction.dimensions.length).fill(0);
 
       return {
