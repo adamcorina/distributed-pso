@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
-import {eventBus} from "../event-bus/eventBus";
+import { eventBus } from "../event-bus/eventBus";
 
 const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
@@ -11,7 +11,11 @@ const WIDTH = window.innerWidth,
   FAR = 100000,
   SEGMENTS = 80;
 
-const FunctionPlotter3D = ({ pso, numberOfIterations, timeBetweenIterations }) => {
+const FunctionPlotter3D = ({
+  pso,
+  numberOfIterations,
+  timeBetweenIterations
+}) => {
   let [scene] = useState(new THREE.Scene());
   let [renderer] = useState(new THREE.WebGLRenderer());
   let [camera] = useState(
@@ -33,8 +37,15 @@ const FunctionPlotter3D = ({ pso, numberOfIterations, timeBetweenIterations }) =
       // start iterations for population
       const intervalId = setInterval(() => {
         if (pso.iterationNum < numberOfIterations) {
+          const introducedColaborativeBest = pso.introduceColaborativeBest();
+          if (introducedColaborativeBest) {
+            canvasParticles[introducedColaborativeBest.index].position.x = introducedColaborativeBest.position[0];
+            canvasParticles[introducedColaborativeBest.index].position.y = introducedColaborativeBest.position[1];
+            canvasParticles[introducedColaborativeBest.index].position.z = introducedColaborativeBest.position[2];
+            canvasParticles[introducedColaborativeBest.index].material.color.setHex(0xd125e8);
+          }
           pso.iterate();
-          eventBus.$emit('iteration');
+          eventBus.$emit("iteration");
           for (let i = 0; i < pso.particles.length; i++) {
             if (canvasParticles[i]) {
               // move plotted particles to their next position
@@ -60,7 +71,7 @@ const FunctionPlotter3D = ({ pso, numberOfIterations, timeBetweenIterations }) =
     scene.add(camera);
 
     const light = new THREE.PointLight(0xffffff);
-    light.position.set(0, 100, 100);
+    light.position.set(0, 0, 100);
     scene.add(light);
 
     new OrbitControls(camera, renderer.domElement);
@@ -90,9 +101,11 @@ const FunctionPlotter3D = ({ pso, numberOfIterations, timeBetweenIterations }) =
     renderCanvas();
   };
 
-  const createParticle = (x, y, z, dimension) => {
+  const createParticle = (x, y, z, dimension, color) => {
     const geometry = new THREE.SphereGeometry(dimension, 16, 16);
-    const material = new THREE.MeshLambertMaterial({ color: 0x00ccff });
+    const material = new THREE.MeshLambertMaterial({
+      color: color ? color : 0x00ccff
+    });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
     return mesh;
@@ -165,14 +178,15 @@ const FunctionPlotter3D = ({ pso, numberOfIterations, timeBetweenIterations }) =
     scene.add(graphMesh);
 
     fitCameraToObject(camera, graphGeometry, 1.3);
-
-    initParticles(pso.particles, getMaxSizeBoundingBox(graphGeometry) * 0.003);
+    const scaledParticleDimension =
+      getMaxSizeBoundingBox(graphGeometry) * 0.005;
+    initParticles(pso.particles, scaledParticleDimension);
   }
 
-  const getMaxSizeBoundingBox = (object) => {
+  const getMaxSizeBoundingBox = object => {
     const size = object.boundingBox.getSize();
     return Math.max(size.x, size.y, size.z);
-  }
+  };
 
   const fitCameraToObject = function(camera, object) {
     const center = object.boundingBox.getCenter();

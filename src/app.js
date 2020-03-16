@@ -4,20 +4,25 @@ import {
   FF_Rastrigin,
   FF_Schwefel,
   FF_2D
-} from "../service/functions";
-import PSO from "../service/pso";
-import Particle from "../service/particle";
+} from "./service/functions";
+import PSO from "./service/pso";
+import Particle from "./service/particle";
 import FunctionPlotter3D from "./components/plot3D";
 import FunctionPlotter2D from "./components/plot2D";
 import TopParticles from "./components/topParticles";
 
+const Gun = require("gun/gun");
+require("gun/lib/not.js");
+require("gun/sea");
+
 import "./app.css";
 
 const NUMBER_OF_ITERATIONS = 500,
-  TIME_BETWEEN_ITERATIONS = 90;
+  TIME_BETWEEN_ITERATIONS = 5000;
 
 const App = () => {
   const [pso, setPSO] = useState(null);
+  const [gun] = useState(Gun(location.origin + "/gun"));
 
   function initializePopulation() {
     const numParticles = 50;
@@ -30,12 +35,37 @@ const App = () => {
       particles.push(p);
     }
 
-    setPSO(new PSO(fitnessFunction, particles));
+    const pso = new PSO(fitnessFunction, particles);
+    gun.get("global-minimum").not(function(key) {
+      gun.get(key).put({
+        position: Object.assign({}, [...pso.bestPosition])
+      });
+    });
+
+    setPSO(pso);
   }
+
+  const globalMinimumChanged = () => {
+    gun
+      .get("global-minimum")
+      .get("position")
+      .once(position => {
+        let { _, ...coordinates } = position;
+        pso.updateColaborativeBest(Object.values(coordinates));
+      });
+  };
 
   useEffect(() => {
     initializePopulation();
   }, []);
+
+  useEffect(() => {
+    if (pso) {
+      gun.get("global-minimum").on(function() {
+        globalMinimumChanged();
+      });
+    }
+  }, [pso]);
 
   if (!pso) {
     return null;

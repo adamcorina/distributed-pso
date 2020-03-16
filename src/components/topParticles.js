@@ -12,7 +12,7 @@ const TopParticles = ({ pso }) => {
         particle.fitness
       ]);
       setTopValues(
-        values.sort((a, b) => b.slice[-1] - a.slice[-1]).slice(0, 3)
+        values.sort((a, b) => a.slice(-1) - b.slice(-1)).slice(0, 3)
       );
     });
   }, []);

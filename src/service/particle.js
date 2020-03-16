@@ -8,7 +8,6 @@ export default class Particle {
     this.position = [];
     this.fitness = Infinity;
 
-    this.bestParticleId = 0;
     this.bestPosition = [];
     this.bestFitness = Infinity;
     this.fitnessFunction = fitnessFunction;

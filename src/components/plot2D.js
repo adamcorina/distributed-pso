@@ -36,6 +36,7 @@ const FunctionPlotter2D = ({
       // start iterations for population
       const intervalId = setInterval(() => {
         if (pso.iterationNum < numberOfIterations) {
+          // pso.introduceColaborativeBest();
           pso.iterate();
           eventBus.$emit("iteration");
           for (let i = 0; i < pso.particles.length; i++) {
@@ -62,7 +63,7 @@ const FunctionPlotter2D = ({
     scene.add(camera);
 
     const light = new THREE.PointLight(0xffffff);
-    light.position.set(0, 100, 100);
+    light.position.set(0, 0, 100);
     scene.add(light);
 
     camera.position.set(0, 0, 100);
