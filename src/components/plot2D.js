@@ -36,7 +36,12 @@ const FunctionPlotter2D = ({
       // start iterations for population
       const intervalId = setInterval(() => {
         if (pso.iterationNum < numberOfIterations) {
-          // pso.introduceColaborativeBest();
+          const introducedColaborativeBest = pso.introduceColaborativeBest();
+          if (introducedColaborativeBest) {
+            canvasParticles[introducedColaborativeBest.index].position.x = introducedColaborativeBest.position[0];
+            canvasParticles[introducedColaborativeBest.index].position.y = introducedColaborativeBest.position[1];
+            canvasParticles[introducedColaborativeBest.index].material.color.setHex(0xd125e8);
+          }
           pso.iterate();
           eventBus.$emit("iteration");
           for (let i = 0; i < pso.particles.length; i++) {

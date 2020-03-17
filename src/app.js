@@ -18,16 +18,16 @@ require("gun/sea");
 import "./app.css";
 
 const NUMBER_OF_ITERATIONS = 500,
-  TIME_BETWEEN_ITERATIONS = 500;
+  TIME_BETWEEN_ITERATIONS = 90;
 
 const App = () => {
   const [pso, setPSO] = useState(null);
   const [gun] = useState(Gun(location.origin + "/gun"));
 
   function initializePopulation() {
-    const numParticles = 50;
+    const numParticles = 2;
     let particles = [];
-    const fitnessFunction = new FF_Rastrigin();
+    const fitnessFunction = new FF_2D();
 
     for (let i = 0; i < numParticles; i++) {
       const uniqueId = particles.length;
