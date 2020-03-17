@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { eventBus } from "../event-bus/eventBus";
+import { eventBus } from "../../event-bus/eventBus";
 import "./topParticles.css";
 
 const TopParticles = ({ pso }) => {

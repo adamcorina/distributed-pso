@@ -4,18 +4,18 @@ import {
   FF_Rastrigin,
   FF_Schwefel,
   FF_2D
-} from "./service/functions";
-import PSO from "./service/pso";
-import Particle from "./service/particle";
-import FunctionPlotter3D from "./components/plot3D";
-import FunctionPlotter2D from "./components/plot2D";
-import TopParticles from "./components/topParticles";
+} from "../service/functions";
+import PSO from "../service/pso";
+import Particle from "../service/particle";
+import FunctionPlotter3D from "./plotters/plot3D";
+import FunctionPlotter2D from "./plotters/plot2D";
+import TopParticles from "./top-particles/topParticles";
 
 const Gun = require("gun/gun");
 require("gun/lib/not.js");
 require("gun/sea");
 
-import { eventBus } from "./event-bus/eventBus";
+import { eventBus } from "../event-bus/eventBus";
 
 import "./app.css";
 
@@ -27,9 +27,9 @@ const App = () => {
   const [gun] = useState(Gun(location.origin + "/gun"));
 
   function initializePopulation() {
-    const numParticles = 2;
+    const numParticles = 10;
     let particles = [];
-    const fitnessFunction = new FF_Rastrigin();
+    const fitnessFunction = new FF_Schwefel();
 
     for (let i = 0; i < numParticles; i++) {
       const uniqueId = particles.length;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
-import { eventBus } from "../event-bus/eventBus";
+import { eventBus } from "../../event-bus/eventBus";
 
 const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,

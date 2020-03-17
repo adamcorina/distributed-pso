@@ -1,11 +1,12 @@
 const webpack = require('webpack');
 const path = require('path');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const config = {
-  entry: [
-    'react-hot-loader/patch',
-    './src/index.js'
-  ],
+  entry: {
+    bundle: './src/index.js'
+  },
   output: {
     path: path.resolve(__dirname, 'public'),
     filename: 'bundle.js'
@@ -26,6 +27,15 @@ const config = {
       }
     ]
   },
+  plugins: [
+    new HTMLWebpackPlugin({
+      template: 'src/index.html'
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new CopyWebpackPlugin([
+      { from: './src/assets', to: '' }
+    ])
+  ],
   resolve: {
     extensions: [
       '.js',
@@ -36,7 +46,10 @@ const config = {
     }
   },
   devServer: {
-    contentBase: './public'
+    contentBase: './public',
+    host: '127.0.0.1',
+    port: '8080',
+    headers: { 'Access-Control-Allow-Origin': '*' }
   }
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
-import { eventBus } from "../event-bus/eventBus";
+import { eventBus } from "../../event-bus/eventBus";
 
 const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
@@ -60,7 +60,7 @@ const FunctionPlotter3D = ({
             }
           }
         } else {
-          clearInterval(intervalId);
+          //clearInterval(intervalId);
         }
       }, timeBetweenIterations);
     }

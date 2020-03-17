@@ -8,7 +8,7 @@ export default class PSO {
 
     this.iterationNum = 0;
 
-    this.inertiaWeight = 0.85;
+    this.inertiaWeight = 0.75;
     this.cognitiveWeight = 0.1;
     this.socialWeight = 0.2;
 

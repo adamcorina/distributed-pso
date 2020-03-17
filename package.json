@@ -10,17 +10,21 @@
     "clean": "rm public/bundle.js",
     "build-dev": "webpack -d --mode development",
     "build": "webpack -p --mode production",
+    "run": "node server.js",
     "start": "webpack-dev-server --hot --mode development"
   },
   "dependencies": {
+    "express": "^4.15.2",
     "gun": "^0.2019.930",
     "nicks-gun-utils": "^2.2.0",
+    "path": "^0.12.7",
     "react": "^16.11.0",
     "react-beautiful-dnd": "^12.0.0",
     "react-dom": "^16.11.0",
     "react-hot-loader": "^4.12.16",
     "three": "^0.114.0",
-    "three-orbit-controls": "^82.1.0"
+    "three-orbit-controls": "^82.1.0",
+    "webpack": "^4.42.0"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",
@@ -29,10 +33,12 @@
     "@babel/preset-react": "^7.7.0",
     "@hot-loader/react-dom": "^16.11.0+4.12.16",
     "babel-loader": "^8.0.6",
+    "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.2.0",
+    "html-webpack-plugin": "^3.2.0",
     "style-loader": "^1.0.0",
-    "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^3.9.0",
+    "webpack-hot-middleware": "^2.25.0"
   }
 }
