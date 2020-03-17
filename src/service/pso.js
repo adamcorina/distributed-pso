@@ -1,12 +1,11 @@
 import { indexOfLargest } from "../utils/utils";
 import { eventBus } from "../event-bus/eventBus";
+import { numberRounding } from "../utils/utils";
 
 export default class PSO {
   constructor(fitnessFunction, particles) {
     this.dimensions = fitnessFunction.dimensions;
     this.fitnessFunction = fitnessFunction;
-
-    this.iterationNum = 0;
 
     this.inertiaWeight = 0.75;
     this.cognitiveWeight = 0.1;
@@ -71,7 +70,6 @@ export default class PSO {
       this.particles[i].computeFitness();
     }
     this.updateGlobalBest();
-    this.iterationNum++;
   }
 
   updateGlobalBest() {
@@ -93,8 +91,8 @@ export default class PSO {
 
     if (
       oldBest &&
-      oldBest.slice(-1)[0].toFixed(5) >
-        this.bestPosition.slice(-1)[0].toFixed(5)
+      numberRounding(oldBest.slice(-1)[0], 5) >
+        numberRounding(this.bestPosition.slice(-1)[0], 5)
     ) {
       eventBus.$emit("new-best");
     }

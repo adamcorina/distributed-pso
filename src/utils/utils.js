@@ -6,4 +6,9 @@ const indexOfLargest = function(particles) {
   return lowest;
 };
 
-module.exports = { indexOfLargest };
+const numberRounding = function (num, digits, base = 10) {
+    var pow = Math.pow(base||10, digits);
+    return Math.round(num*pow) / pow;
+}
+
+module.exports = { indexOfLargest, numberRounding };

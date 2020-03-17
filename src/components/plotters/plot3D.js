@@ -13,7 +13,6 @@ const WIDTH = window.innerWidth,
 
 const FunctionPlotter3D = ({
   pso,
-  numberOfIterations,
   timeBetweenIterations
 }) => {
   let [scene] = useState(new THREE.Scene());
@@ -35,32 +34,28 @@ const FunctionPlotter3D = ({
   useEffect(() => {
     if (canvasParticles.length) {
       // start iterations for population
-      const intervalId = setInterval(() => {
-        if (pso.iterationNum < numberOfIterations) {
-          const introducedColaborativeBest = pso.introduceColaborativeBest();
-          if (introducedColaborativeBest) {
-            canvasParticles[introducedColaborativeBest.index].position.x =
-              introducedColaborativeBest.position[0];
-            canvasParticles[introducedColaborativeBest.index].position.y =
-              introducedColaborativeBest.position[1];
-            canvasParticles[introducedColaborativeBest.index].position.z =
-              introducedColaborativeBest.position[2];
-            canvasParticles[
-              introducedColaborativeBest.index
-            ].material.color.setHex(0xffe100);
+      setInterval(() => {
+        const introducedColaborativeBest = pso.introduceColaborativeBest();
+        if (introducedColaborativeBest) {
+          canvasParticles[introducedColaborativeBest.index].position.x =
+            introducedColaborativeBest.position[0];
+          canvasParticles[introducedColaborativeBest.index].position.y =
+            introducedColaborativeBest.position[1];
+          canvasParticles[introducedColaborativeBest.index].position.z =
+            introducedColaborativeBest.position[2];
+          canvasParticles[
+            introducedColaborativeBest.index
+          ].material.color.setHex(0xffe100);
+        }
+        pso.iterate();
+        eventBus.$emit("iteration");
+        for (let i = 0; i < pso.particles.length; i++) {
+          if (canvasParticles[i]) {
+            // move plotted particles to their next position
+            canvasParticles[i].position.x = pso.particles[i].position[0];
+            canvasParticles[i].position.y = pso.particles[i].position[1];
+            canvasParticles[i].position.z = pso.particles[i].fitness;
           }
-          pso.iterate();
-          eventBus.$emit("iteration");
-          for (let i = 0; i < pso.particles.length; i++) {
-            if (canvasParticles[i]) {
-              // move plotted particles to their next position
-              canvasParticles[i].position.x = pso.particles[i].position[0];
-              canvasParticles[i].position.y = pso.particles[i].position[1];
-              canvasParticles[i].position.z = pso.particles[i].fitness;
-            }
-          }
-        } else {
-          //clearInterval(intervalId);
         }
       }, timeBetweenIterations);
     }

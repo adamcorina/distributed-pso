@@ -19,8 +19,7 @@ import { eventBus } from "../event-bus/eventBus";
 
 import "./app.css";
 
-const NUMBER_OF_ITERATIONS = 500,
-  TIME_BETWEEN_ITERATIONS = 90;
+const TIME_BETWEEN_ITERATIONS = 120;
 
 const App = () => {
   const [pso, setPSO] = useState(null);
@@ -83,13 +82,11 @@ const App = () => {
       {pso.fitnessFunction.dimensions.length == 2 ? (
         <FunctionPlotter3D
           pso={pso}
-          numberOfIterations={NUMBER_OF_ITERATIONS}
           timeBetweenIterations={TIME_BETWEEN_ITERATIONS}
         />
       ) : (
         <FunctionPlotter2D
           pso={pso}
-          numberOfIterations={NUMBER_OF_ITERATIONS}
           timeBetweenIterations={TIME_BETWEEN_ITERATIONS}
         />
       )}
