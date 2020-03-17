@@ -28,7 +28,7 @@ export default class PSO {
 
   introduceColaborativeBest() {
     const bestToIntroduce = [...this.colaborativeBestPosition];
-    if (this.bestPosition.slice(-1) > bestToIntroduce.slice(-1)) {
+    if (this.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
       console.log('replaced particle');
       const smallestIndex = indexOfLargest(this.particles);
       this.particles[smallestIndex].fitness = bestToIntroduce.pop();
@@ -73,7 +73,7 @@ export default class PSO {
     ];
 
     for (let i = 1; i < this.particles.length; i++) {
-      if (this.particles[i].bestFitness < this.bestPosition.slice(-1)) {
+      if (this.particles[i].bestFitness < this.bestPosition.slice(-1)[0]) {
         this.bestPosition = [
           ...this.particles[i].bestPosition,
           this.particles[i].bestFitness

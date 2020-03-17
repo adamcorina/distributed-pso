@@ -11,7 +11,7 @@ const TopParticles = ({ pso }) => {
         ...particle.bestPosition,
         particle.bestFitness
       ]);
-      values.sort((a, b) => a.slice(-1) - b.slice(-1));
+      values.sort((a, b) => a.slice(-1)[0] - b.slice(-1)[0]);
       setTopValues(values.slice(0, 3));
     });
   }, []);
