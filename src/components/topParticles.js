@@ -44,7 +44,7 @@ const TopParticles = ({ pso }) => {
             colSpan={pso.fitnessFunction.dimensions.length + 1}
             align="center"
           >
-            Top 3 particles
+            Top particles
           </td>
         </tr>
       </thead>

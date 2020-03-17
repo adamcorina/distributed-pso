@@ -40,7 +40,7 @@ const FunctionPlotter2D = ({
           if (introducedColaborativeBest) {
             canvasParticles[introducedColaborativeBest.index].position.x = introducedColaborativeBest.position[0];
             canvasParticles[introducedColaborativeBest.index].position.y = introducedColaborativeBest.position[1];
-            canvasParticles[introducedColaborativeBest.index].material.color.setHex(0xd125e8);
+            canvasParticles[introducedColaborativeBest.index].material.color.setHex(0xffe100);
           }
           pso.iterate();
           eventBus.$emit("iteration");
@@ -100,7 +100,7 @@ const FunctionPlotter2D = ({
 
   const createParticle = (x, y, dimension) => {
     const geometry = new THREE.SphereGeometry(dimension, 16, 16);
-    const material = new THREE.MeshLambertMaterial({ color: 0x00ccff });
+    const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, 0);
     return mesh;

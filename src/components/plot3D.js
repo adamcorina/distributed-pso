@@ -39,10 +39,15 @@ const FunctionPlotter3D = ({
         if (pso.iterationNum < numberOfIterations) {
           const introducedColaborativeBest = pso.introduceColaborativeBest();
           if (introducedColaborativeBest) {
-            canvasParticles[introducedColaborativeBest.index].position.x = introducedColaborativeBest.position[0];
-            canvasParticles[introducedColaborativeBest.index].position.y = introducedColaborativeBest.position[1];
-            canvasParticles[introducedColaborativeBest.index].position.z = introducedColaborativeBest.position[2];
-            canvasParticles[introducedColaborativeBest.index].material.color.setHex(0xd125e8);
+            canvasParticles[introducedColaborativeBest.index].position.x =
+              introducedColaborativeBest.position[0];
+            canvasParticles[introducedColaborativeBest.index].position.y =
+              introducedColaborativeBest.position[1];
+            canvasParticles[introducedColaborativeBest.index].position.z =
+              introducedColaborativeBest.position[2];
+            canvasParticles[
+              introducedColaborativeBest.index
+            ].material.color.setHex(0xffe100);
           }
           pso.iterate();
           eventBus.$emit("iteration");
@@ -71,7 +76,7 @@ const FunctionPlotter3D = ({
     scene.add(camera);
 
     const light = new THREE.PointLight(0xffffff);
-    light.position.set(0, 0, 100);
+    light.position.set(0, 0, 1000);
     scene.add(light);
 
     new OrbitControls(camera, renderer.domElement);
@@ -101,11 +106,9 @@ const FunctionPlotter3D = ({
     renderCanvas();
   };
 
-  const createParticle = (x, y, z, dimension, color) => {
+  const createParticle = (x, y, z, dimension) => {
     const geometry = new THREE.SphereGeometry(dimension, 16, 16);
-    const material = new THREE.MeshLambertMaterial({
-      color: color ? color : 0x00ccff
-    });
+    const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(x, y, z);
     return mesh;

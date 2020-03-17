@@ -15,6 +15,8 @@ const Gun = require("gun/gun");
 require("gun/lib/not.js");
 require("gun/sea");
 
+import { eventBus } from "./event-bus/eventBus";
+
 import "./app.css";
 
 const NUMBER_OF_ITERATIONS = 500,
@@ -27,7 +29,7 @@ const App = () => {
   function initializePopulation() {
     const numParticles = 2;
     let particles = [];
-    const fitnessFunction = new FF_2D();
+    const fitnessFunction = new FF_Rastrigin();
 
     for (let i = 0; i < numParticles; i++) {
       const uniqueId = particles.length;
@@ -63,6 +65,11 @@ const App = () => {
     if (pso) {
       gun.get("global-minimum").on(function() {
         globalMinimumChanged();
+      });
+      eventBus.$on("new-best", () => {
+        gun.get("global-minimum").put({
+          position: Object.assign({}, [...pso.bestPosition])
+        });
       });
     }
   }, [pso]);
