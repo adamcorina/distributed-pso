@@ -1,6 +1,6 @@
 import { indexOfLargest } from "../../utils/utils";
 import { eventBus } from "../../../event-bus/eventBus";
-import { numberRounding } from "../../utils/utils";
+import { numberRounding, random } from "../../utils/utils";
 
 export default class PSO {
   constructor(fitnessFunction, particles) {
@@ -54,15 +54,32 @@ export default class PSO {
 
   iterate() {
     for (let i = 0; i < this.particles.length; i++) {
-      this.particles[i].movePosition(
-        this.bestPosition,
-        this.inertiaWeight,
-        this.cognitiveWeight,
-        this.socialWeight
-      );
+      this.movePosition(this.particles[i]);
       this.particles[i].computeFitness();
     }
     this.updateGlobalBest();
+  }
+
+  movePosition(particle) {
+    for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
+      let vMomentum = this.inertiaWeight * particle.velocity[i];
+
+      let d1 = particle.bestPosition[i] - particle.position[i];
+      let vCognitive = this.cognitiveWeight * random(0, 1) * d1;
+
+      let d2 = this.bestPosition[i] - particle.position[i];
+      let vSocial = this.socialWeight * random(0, 1) * d2;
+
+      particle.velocity[i] = vMomentum + vCognitive + vSocial;
+      particle.position[i] = particle.position[i] + particle.velocity[i];
+
+      if (particle.position[i] > particle.fitnessFunction.dimensions[i].max) {
+        particle.position[i] = particle.fitnessFunction.dimensions[i].max;
+      }
+      if (particle.position[i] < particle.fitnessFunction.dimensions[i].min) {
+        particle.position[i] = particle.fitnessFunction.dimensions[i].min;
+      }
+    }
   }
 
   updateGlobalBest() {

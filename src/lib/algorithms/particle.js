@@ -1,6 +1,4 @@
-function random(min, max) {
-  return min + (max - min) * Math.random();
-}
+import {random} from "../utils/utils"
 
 export default class Particle {
   constructor(fitnessFunction, id) {
@@ -39,33 +37,6 @@ export default class Particle {
         this.bestPosition[i] = this.position[i];
       }
       this.bestFitness = this.fitness;
-    }
-  }
-
-  movePosition(
-    socialBestPosition,
-    inertiaWeight,
-    cognitiveWeight,
-    socialWeight
-  ) {
-    for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
-      let vMomentum = inertiaWeight * this.velocity[i];
-
-      let d1 = this.bestPosition[i] - this.position[i];
-      let vCognitive = cognitiveWeight * random(0, 1) * d1;
-
-      let d2 = socialBestPosition[i] - this.position[i];
-      let vSocial = socialWeight * random(0, 1) * d2;
-
-      this.velocity[i] = vMomentum + vCognitive + vSocial;
-      this.position[i] = this.position[i] + this.velocity[i];
-
-      if (this.position[i] > this.fitnessFunction.dimensions[i].max) {
-        this.position[i] = this.fitnessFunction.dimensions[i].max;
-      }
-      if (this.position[i] < this.fitnessFunction.dimensions[i].min) {
-        this.position[i] = this.fitnessFunction.dimensions[i].min;
-      }
     }
   }
 }
