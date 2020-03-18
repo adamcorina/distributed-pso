@@ -33,7 +33,7 @@ const config = {
     }),
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
-      { from: './src/assets', to: '' }
+      { from: './public', to: '' }
     ])
   ],
   resolve: {

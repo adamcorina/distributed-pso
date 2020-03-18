@@ -1,6 +1,6 @@
-import { indexOfLargest } from "../utils/utils";
-import { eventBus } from "../event-bus/eventBus";
-import { numberRounding } from "../utils/utils";
+import { indexOfLargest } from "../../utils/utils";
+import { eventBus } from "../../event-bus/eventBus";
+import { numberRounding } from "../../utils/utils";
 
 export default class PSO {
   constructor(fitnessFunction, particles) {
@@ -9,7 +9,7 @@ export default class PSO {
 
     this.inertiaWeight = 0.75;
     this.cognitiveWeight = 0.1;
-    this.socialWeight = 0.2;
+    this.socialWeight = 0.3;
 
     this.particles = particles;
     this.updateGlobalBest();
@@ -18,7 +18,6 @@ export default class PSO {
   }
 
   updateColaborativeBest(coordinates) {
-    console.log("updating colaborative best with particle: ", coordinates);
     this.colaborativeBestPosition = [...coordinates];
   }
 
@@ -29,12 +28,6 @@ export default class PSO {
   introduceColaborativeBest() {
     const bestToIntroduce = [...this.colaborativeBestPosition];
     if (this.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
-      console.log(
-        "replaced particle with fitness: ",
-        this.bestPosition.slice(-1)[0],
-        " with: ",
-        bestToIntroduce.slice(-1)[0]
-      );
       const smallestIndex = indexOfLargest(this.particles);
       this.particles[smallestIndex].fitness = bestToIntroduce.pop();
       this.particles[smallestIndex].position = bestToIntroduce;
