@@ -28,7 +28,7 @@ const App = () => {
   function initializePopulation() {
     const numParticles = 10;
     let particles = [];
-    const fitnessFunction = new FF_Schwefel();
+    const fitnessFunction = new FF_Rastrigin();
 
     for (let i = 0; i < numParticles; i++) {
       const uniqueId = particles.length;
