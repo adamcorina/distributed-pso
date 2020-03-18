@@ -1,5 +1,5 @@
 import { indexOfLargest } from "../../utils/utils";
-import { eventBus } from "../../event-bus/eventBus";
+import { eventBus } from "../../../event-bus/eventBus";
 import { numberRounding } from "../../utils/utils";
 
 export default class PSO {

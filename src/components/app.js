@@ -4,9 +4,9 @@ import {
   FF_Rastrigin,
   FF_Schwefel,
   FF_2D
-} from "../service/optimisation-functions/functions";
-import PSO from "../service/pso/pso";
-import Particle from "../service/pso/particle";
+} from "../lib/optimisation-functions/functions";
+import PSO from "../lib/algorithms/pso/pso";
+import Particle from "../lib/algorithms/particle";
 import FunctionPlotter3D from "./plotters/plot3D";
 import FunctionPlotter2D from "./plotters/plot2D";
 import TopParticles from "./top-particles/topParticles";
