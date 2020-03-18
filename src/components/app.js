@@ -28,7 +28,7 @@ const App = () => {
   function initializePopulation() {
     const numParticles = 10;
     let particles = [];
-    const fitnessFunction = new FF_Rastrigin();
+    const fitnessFunction = new FF_2D();
 
     for (let i = 0; i < numParticles; i++) {
       const uniqueId = particles.length;
@@ -70,6 +70,16 @@ const App = () => {
           position: Object.assign({}, [...pso.bestPosition])
         });
       });
+      const plotter = pso.fitnessFunction.dimensions.length === 2 ? new FunctionPlotter3D() : new FunctionPlotter2D();
+      const domElement = plotter.initialize(pso, TIME_BETWEEN_ITERATIONS);
+      const container = document.getElementById("functionPlotterContainer");
+
+      container.appendChild(domElement);
+
+      setInterval(() => {
+        plotter.iterate(pso);
+      }, TIME_BETWEEN_ITERATIONS);
+
     }
   }, [pso]);
 
@@ -79,17 +89,7 @@ const App = () => {
 
   return (
     <div className="app-container">
-      {pso.fitnessFunction.dimensions.length == 2 ? (
-        <FunctionPlotter3D
-          pso={pso}
-          timeBetweenIterations={TIME_BETWEEN_ITERATIONS}
-        />
-      ) : (
-        <FunctionPlotter2D
-          pso={pso}
-          timeBetweenIterations={TIME_BETWEEN_ITERATIONS}
-        />
-      )}
+      <div id="functionPlotterContainer"/>
       <TopParticles pso={pso} />
     </div>
   );

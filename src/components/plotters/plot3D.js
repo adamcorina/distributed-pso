@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
 import { eventBus } from "../../event-bus/eventBus";
@@ -11,105 +10,93 @@ const WIDTH = window.innerWidth,
   FAR = 100000,
   SEGMENTS = 80;
 
-const FunctionPlotter3D = ({
-  pso,
-  timeBetweenIterations
-}) => {
-  let [scene] = useState(new THREE.Scene());
-  let [renderer] = useState(new THREE.WebGLRenderer());
-  let [camera] = useState(
-    new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
-  );
-  let [canvasParticles, setCanvasParticles] = useState([]);
+class FunctionPlotter3D {
+  constructor() {
+    this.scene = new THREE.Scene();
+    this.renderer = new THREE.WebGLRenderer();
+    this.camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+  }
 
-  useEffect(() => {
-    if (pso) {
-      window.addEventListener("resize", onWindowResize, false);
-      init();
-      animate();
-      createGraph();
+  initialize(pso) {
+    window.addEventListener("resize", this.onWindowResize, false);
+    this.init();
+    this.animate();
+    this.createGraph(pso);
+
+    return this.renderer.domElement;
+  }
+
+  iterate(pso) {
+    const introducedColaborativeBest = pso.introduceColaborativeBest();
+    if (introducedColaborativeBest) {
+      pso.particles[
+        introducedColaborativeBest.index
+      ].domMeshReference.position.x = introducedColaborativeBest.position[0];
+      pso.particles[
+        introducedColaborativeBest.index
+      ].domMeshReference.position.y = introducedColaborativeBest.position[1];
+      pso.particles[
+        introducedColaborativeBest.index
+      ].domMeshReference.position.z = introducedColaborativeBest.position[2];
+      pso.particles[
+        introducedColaborativeBest.index
+      ].domMeshReference.material.color.setHex(0xffe100);
     }
-  }, [pso]);
-
-  useEffect(() => {
-    if (canvasParticles.length) {
-      // start iterations for population
-      setInterval(() => {
-        const introducedColaborativeBest = pso.introduceColaborativeBest();
-        if (introducedColaborativeBest) {
-          canvasParticles[introducedColaborativeBest.index].position.x =
-            introducedColaborativeBest.position[0];
-          canvasParticles[introducedColaborativeBest.index].position.y =
-            introducedColaborativeBest.position[1];
-          canvasParticles[introducedColaborativeBest.index].position.z =
-            introducedColaborativeBest.position[2];
-          canvasParticles[
-            introducedColaborativeBest.index
-          ].material.color.setHex(0xffe100);
-        }
-        pso.iterate();
-        eventBus.$emit("iteration");
-        for (let i = 0; i < pso.particles.length; i++) {
-          if (canvasParticles[i]) {
-            // move plotted particles to their next position
-            canvasParticles[i].position.x = pso.particles[i].position[0];
-            canvasParticles[i].position.y = pso.particles[i].position[1];
-            canvasParticles[i].position.z = pso.particles[i].fitness;
-          }
-        }
-      }, timeBetweenIterations);
+    pso.iterate();
+    eventBus.$emit("iteration");
+    for (let i = 0; i < pso.particles.length; i++) {
+      // move plotted particles to their next position
+      pso.particles[i].domMeshReference.position.x =
+        pso.particles[i].position[0];
+      pso.particles[i].domMeshReference.position.y =
+        pso.particles[i].position[1];
+      pso.particles[i].domMeshReference.position.z = pso.particles[i].fitness;
     }
-  }, [canvasParticles]);
+  }
 
-  const init = () => {
-    const container = document.getElementById("functionPloterContainer");
-    container.appendChild(renderer.domElement);
-
-    renderer.setSize(WIDTH, HEIGHT);
-    renderer.setClearColor(0xdddddd, 1);
-    renderer.clear();
-    scene.add(camera);
+  init() {
+    this.renderer.setSize(WIDTH, HEIGHT);
+    this.renderer.setClearColor(0xdddddd, 1);
+    this.renderer.clear();
+    this.scene.add(this.camera);
 
     const light = new THREE.PointLight(0xffffff);
     light.position.set(0, 0, 1000);
-    scene.add(light);
+    this.scene.add(light);
 
-    new OrbitControls(camera, renderer.domElement);
-  };
+    new OrbitControls(this.camera, this.renderer.domElement);
+  }
 
-  const animate = () => {
-    requestAnimationFrame(animate);
-    renderCanvas();
-  };
+  animate() {
+    requestAnimationFrame(() => this.animate());
+    this.renderCanvas();
+  }
 
-  const renderCanvas = () => {
-    renderer.render(scene, camera);
-  };
+  renderCanvas() {
+    this.renderer.render(this.scene, this.camera);
+  }
 
-  const initParticles = (particles, dimension) => {
-    const particlesToAdd = [];
+  initParticles(particles, dimension) {
     particles.forEach(particle => {
-      const particleToAdd = createParticle(
-        ...particle.position,
-        particle.fitness,
-        dimension
-      );
-      particlesToAdd.push(particleToAdd);
-      scene.add(particleToAdd);
+      this.createParticle(particle, dimension);
     });
-    setCanvasParticles(particlesToAdd);
-    renderCanvas();
-  };
+    this.renderCanvas();
+  }
 
-  const createParticle = (x, y, z, dimension) => {
+  createParticle(particle, dimension) {
     const geometry = new THREE.SphereGeometry(dimension, 16, 16);
     const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(x, y, z);
-    return mesh;
-  };
+    mesh.position.set(
+      particle.position[0],
+      particle.position[1],
+      particle.fitness
+    );
+    particle.domMeshReference = mesh;
+    this.scene.add(mesh);
+  }
 
-  function createGraph() {
+  createGraph(pso) {
     const xMin = pso.fitnessFunction.dimensions[0].min;
     const xMax = pso.fitnessFunction.dimensions[0].max;
     const yMin = pso.fitnessFunction.dimensions[1].min;
@@ -173,48 +160,46 @@ const FunctionPlotter3D = ({
 
     const graphMesh = new THREE.Mesh(graphGeometry, wireMaterial);
     graphMesh.doubleSided = true;
-    scene.add(graphMesh);
+    this.scene.add(graphMesh);
 
-    fitCameraToObject(camera, graphGeometry, 1.3);
+    this.fitCameraToObject(graphGeometry, 1.3);
     const scaledParticleDimension =
-      getMaxSizeBoundingBox(graphGeometry) * 0.005;
-    initParticles(pso.particles, scaledParticleDimension);
+      this.getMaxSizeBoundingBox(graphGeometry) * 0.005;
+    this.initParticles(pso.particles, scaledParticleDimension);
   }
 
-  const getMaxSizeBoundingBox = object => {
+  getMaxSizeBoundingBox(object) {
     const size = object.boundingBox.getSize();
     return Math.max(size.x, size.y, size.z);
-  };
+  }
 
-  const fitCameraToObject = function(camera, object) {
+  fitCameraToObject(object) {
     const center = object.boundingBox.getCenter();
 
-    const maxDim = getMaxSizeBoundingBox(object);
-    const fov = camera.fov * (Math.PI / 180);
+    const maxDim = this.getMaxSizeBoundingBox(object);
+    const fov = this.camera.fov * (Math.PI / 180);
     let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
     cameraZ *= 1.3; // zoom out a little so that objects don't fill the screen
 
-    camera.position.z = cameraZ;
+    this.camera.position.z = cameraZ;
 
     const minZ = object.boundingBox.min.z;
     const cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
 
-    camera.far = cameraToFarEdge * 3;
-    camera.updateProjectionMatrix();
-    camera.lookAt(center);
+    this.camera.far = cameraToFarEdge * 3;
+    this.camera.updateProjectionMatrix();
+    this.camera.lookAt(center);
 
     const axesHelper = new THREE.AxesHelper(maxDim);
-    scene.add(axesHelper);
-  };
+    this.scene.add(axesHelper);
+  }
 
-  const onWindowResize = () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+  onWindowResize() {
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  };
-
-  return <div id={"functionPloterContainer"} />;
-};
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+}
 
 export default FunctionPlotter3D;

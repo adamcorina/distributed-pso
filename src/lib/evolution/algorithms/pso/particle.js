@@ -10,6 +10,8 @@ export default class Particle {
     this.bestFitness = Infinity;
     this.fitnessFunction = fitnessFunction;
 
+    this.domMeshReference = null;
+
     for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
       const randomNumber = random(
         this.fitnessFunction.dimensions[i].min,
