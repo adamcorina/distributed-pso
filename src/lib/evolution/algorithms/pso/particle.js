@@ -10,6 +10,7 @@ export default class Particle {
     this.bestFitness = Infinity;
     this.fitnessFunction = fitnessFunction;
 
+    this.isReplaced = false;
     this.domMeshReference = null;
 
     for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {

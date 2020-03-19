@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { eventBus } from "../../event-bus/eventBus";
 
 const WIDTH = window.innerWidth,
   HEIGHT = window.innerHeight,
@@ -28,7 +27,7 @@ class FunctionPlotter2D {
       // move plotted particles to their next position
       const particle = pso.particles[i];
       const coordinates = [particle.position[0], particle.fitness];
-      updateParticle(particle.domMeshReference, coordinates);
+      updateParticle(particle.domMeshReference, coordinates, particle.isReplaced ? 0xffe100 : null);
     }
   }
 }
@@ -74,6 +73,7 @@ const createParticle = function(particle, dimension) {
 const updateParticle = function(mesh, coordinates) {
   mesh.position.x = coordinates[0];
   mesh.position.y = coordinates[1];
+  color && mesh.material.color.setHex(color);
 };
 
 const createGraph = function(pso) {

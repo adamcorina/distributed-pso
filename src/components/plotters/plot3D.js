@@ -29,7 +29,7 @@ class FunctionPlotter3D {
       // move plotted particles to their next position
       const particle = pso.particles[i];
       const coordinates = [...particle.position, particle.fitness];
-      updateParticle(particle.domMeshReference, coordinates);
+      updateParticle(particle.domMeshReference, coordinates, particle.isReplaced ? 0xffe100 : null);
     }
   }
 }
@@ -76,10 +76,11 @@ const createParticle = function(particle, dimension) {
   scene.add(mesh);
 };
 
-const updateParticle = function(mesh, coordinates) {
+const updateParticle = function(mesh, coordinates, color) {
   mesh.position.x = coordinates[0];
   mesh.position.y = coordinates[1];
   mesh.position.z = coordinates[2];
+  color && mesh.material.color.setHex(color);
 };
 
 const createGraph = function(pso) {
