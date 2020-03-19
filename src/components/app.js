@@ -77,7 +77,7 @@ const App = () => {
       container.appendChild(domElement);
 
       setInterval(() => {
-        plotter.iterate(pso);
+        plotter.render(pso);
       }, TIME_BETWEEN_ITERATIONS);
 
     }
