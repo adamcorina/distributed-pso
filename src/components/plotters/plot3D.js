@@ -25,17 +25,6 @@ class FunctionPlotter3D {
   }
 
   render(pso) {
-    const introducedColaborativeBest = pso.introduceColaborativeBest();
-    if (introducedColaborativeBest) {
-      const particle = pso.particles[introducedColaborativeBest.index];
-      updateParticle(
-        particle.domMeshReference,
-        introducedColaborativeBest.position,
-        0xffe100
-      );
-    }
-    pso.iterate();
-    eventBus.$emit("iteration");
     for (let i = 0; i < pso.particles.length; i++) {
       // move plotted particles to their next position
       const particle = pso.particles[i];
@@ -87,11 +76,10 @@ const createParticle = function(particle, dimension) {
   scene.add(mesh);
 };
 
-const updateParticle = function(mesh, coordinates, color) {
+const updateParticle = function(mesh, coordinates) {
   mesh.position.x = coordinates[0];
   mesh.position.y = coordinates[1];
   mesh.position.z = coordinates[2];
-  color && mesh.material.color.setHex(color);
 };
 
 const createGraph = function(pso) {

@@ -1,4 +1,4 @@
-import {random} from "../../utils/utils"
+import {random} from "../../../utils/utils"
 
 export default class Particle {
   constructor(fitnessFunction, id) {

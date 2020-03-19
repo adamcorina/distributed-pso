@@ -11,11 +11,9 @@ import FunctionPlotter3D from "./plotters/plot3D";
 import FunctionPlotter2D from "./plotters/plot2D";
 import TopParticles from "./top-particles/topParticles";
 
-const Gun = require("gun/gun");
-require("gun/lib/not.js");
-require("gun/sea");
-
+import Collaboration from "../lib/collaboration/collaboration"
 import { eventBus } from "../event-bus/eventBus";
+
 
 import "./app.css";
 
@@ -23,12 +21,11 @@ const TIME_BETWEEN_ITERATIONS = 120;
 
 const App = () => {
   const [pso, setPSO] = useState(null);
-  const [gun] = useState(Gun(location.origin + "/gun"));
 
   function initializePopulation() {
     const numParticles = 10;
     let particles = [];
-    const fitnessFunction = new FF_2D();
+    const fitnessFunction = new FF_Schwefel();
 
     for (let i = 0; i < numParticles; i++) {
       const uniqueId = particles.length;
@@ -37,24 +34,8 @@ const App = () => {
     }
 
     const pso = new PSO(fitnessFunction, particles);
-    gun.get("global-minimum").not(function(key) {
-      gun.get(key).put({
-        position: Object.assign({}, [...pso.bestPosition])
-      });
-    });
-
     setPSO(pso);
   }
-
-  const globalMinimumChanged = () => {
-    gun
-      .get("global-minimum")
-      .get("position")
-      .once(position => {
-        let { _, ...coordinates } = position;
-        pso.updateColaborativeBest(Object.values(coordinates));
-      });
-  };
 
   useEffect(() => {
     initializePopulation();
@@ -62,14 +43,9 @@ const App = () => {
 
   useEffect(() => {
     if (pso) {
-      gun.get("global-minimum").on(function() {
-        globalMinimumChanged();
-      });
-      eventBus.$on("new-best", () => {
-        gun.get("global-minimum").put({
-          position: Object.assign({}, [...pso.bestPosition])
-        });
-      });
+      const collaboration = new Collaboration();
+      collaboration.initialize(pso);
+
       const plotter = pso.fitnessFunction.dimensions.length === 2 ? new FunctionPlotter3D() : new FunctionPlotter2D();
       const domElement = plotter.initialize(pso, TIME_BETWEEN_ITERATIONS);
       const container = document.getElementById("functionPlotterContainer");
@@ -77,7 +53,10 @@ const App = () => {
       container.appendChild(domElement);
 
       setInterval(() => {
+        pso.iterate();
+        eventBus.$emit("iteration");
         plotter.render(pso);
+        collaboration.render(pso);
       }, TIME_BETWEEN_ITERATIONS);
 
     }
