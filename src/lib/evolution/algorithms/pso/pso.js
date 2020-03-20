@@ -2,14 +2,16 @@ import { indexOfLargest } from "../../../utils/utils";
 import { random } from "../../../utils/utils";
 
 export default class PSO {
-  constructor(fitnessFunction, particles) {
+  constructor(fitnessFunction) {
     this.dimensions = fitnessFunction.dimensions;
     this.fitnessFunction = fitnessFunction;
 
     this.inertiaWeight = 0.75;
     this.cognitiveWeight = 0.1;
     this.socialWeight = 0.3;
+  }
 
+  setParticles(particles) {
     this.particles = particles;
     this.updateGlobalBest();
 
@@ -21,19 +23,19 @@ export default class PSO {
   }
 
   replaceWorstParticle(bestToIntroduce) {
-      const smallestIndex = indexOfLargest(this.particles);
-      this.particles[smallestIndex].fitness = bestToIntroduce.pop();
-      this.particles[smallestIndex].position = bestToIntroduce;
-      this.particles[smallestIndex].bestFitness = this.particles[
-        smallestIndex
-      ].fitness;
-      this.particles[smallestIndex].bestPosition = [
-        ...this.particles[smallestIndex].position
-      ];
-      this.particles[smallestIndex].velocity = new Array(
-        this.fitnessFunction.dimensions.length
-      ).fill(0);
-      this.particles[smallestIndex].isReplaced = true;
+    const smallestIndex = indexOfLargest(this.particles);
+    this.particles[smallestIndex].fitness = bestToIntroduce.pop();
+    this.particles[smallestIndex].position = bestToIntroduce;
+    this.particles[smallestIndex].bestFitness = this.particles[
+      smallestIndex
+    ].fitness;
+    this.particles[smallestIndex].bestPosition = [
+      ...this.particles[smallestIndex].position
+    ];
+    this.particles[smallestIndex].velocity = new Array(
+      this.fitnessFunction.dimensions.length
+    ).fill(0);
+    this.particles[smallestIndex].isReplaced = true;
   }
 
   iterate() {
@@ -44,7 +46,20 @@ export default class PSO {
     this.updateGlobalBest();
   }
 
+  initializeVelocity(particle) {
+    particle.velocity = [];
+    for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
+      let d =
+        particle.fitnessFunction.dimensions[i].max -
+        particle.fitnessFunction.dimensions[i].min;
+      particle.velocity.push(random(-d, d));
+    }
+  }
+
   movePosition(particle) {
+    if (!particle.velocity) {
+      this.initializeVelocity(particle);
+    }
     for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
       let vMomentum = this.inertiaWeight * particle.velocity[i];
 
