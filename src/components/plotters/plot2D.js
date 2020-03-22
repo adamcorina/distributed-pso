@@ -1,142 +1,171 @@
 import * as THREE from "three";
 
-const WIDTH = window.innerWidth,
-  HEIGHT = window.innerHeight,
-  VIEW_ANGLE = 50,
-  ASPECT = WIDTH / HEIGHT,
-  NEAR = 0.1,
-  FAR = 10000,
-  SEGMENTS = 80;
+const OrbitControls = require("three-orbit-controls")(THREE);
 
-const scene = new THREE.Scene();
-const renderer = new THREE.WebGLRenderer();
-const camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+import React, { useEffect, useState, useRef } from "react";
 
-class FunctionPlotter2D {
-  initialize(pso) {
-    window.addEventListener("resize", onWindowResize, false);
-    init();
-    animate();
-    createGraph(pso);
+export default function FunctionPlotter2D({ algorithm, iteration }) {
+  const mount = useRef(null);
+  const [isAnimating] = useState(true);
+  const controls = useRef(null);
 
-    return renderer.domElement;
-  }
+  useEffect(() => {
+    let width = mount.current.clientWidth;
+    let height = mount.current.clientHeight;
+    let frameId;
+    let segments = 80;
 
-  render(pso) {
-    for (let i = 0; i < pso.particles.length; i++) {
-      // move plotted particles to their next position
-      const particle = pso.particles[i];
-      const coordinates = [particle.position[0], particle.fitness];
-      updateParticle(particle.domMeshReference, coordinates, particle.isReplaced ? 0xffe100 : null);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+    renderer.setSize(width, height);
+    renderer.setClearColor(0xdddddd, 1);
+    renderer.clear();
+    scene.add(camera);
+
+    const light = new THREE.PointLight(0xffffff);
+    light.position.set(0, 0, 1000);
+    scene.add(light);
+
+    new OrbitControls(camera, renderer.domElement);
+
+    const xMin = algorithm.fitnessFunction.dimensions[0].min;
+    const xMax = algorithm.fitnessFunction.dimensions[0].max;
+
+    const xRange = xMax - xMin;
+    const yFunc = algorithm.fitnessFunction.compute;
+
+    const meshFunction = function(x, z, target) {
+      x = xRange * x + xMin;
+      var y = yFunc(x);
+      target.set(x, y, 0);
+    };
+
+    const graphGeometry = new THREE.ParametricGeometry(
+      meshFunction,
+      segments,
+      segments
+    );
+
+    graphGeometry.computeBoundingBox();
+
+    var material = new THREE.LineBasicMaterial({ color: 0x000000 });
+
+    const line = new THREE.Line(graphGeometry, material);
+    scene.add(line);
+
+    const getMaxSizeBoundingBox = function(object) {
+      const size = object.boundingBox.getSize();
+      return Math.max(size.x, size.y, size.z);
+    };
+
+    const center = graphGeometry.boundingBox.getCenter();
+
+    const maxDim = getMaxSizeBoundingBox(graphGeometry);
+    const fov = camera.fov * (Math.PI / 180);
+    let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
+
+    camera.position.z = cameraZ;
+
+    const minZ = graphGeometry.boundingBox.min.z;
+    const cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
+
+    camera.far = cameraToFarEdge * 3;
+    camera.updateProjectionMatrix();
+    camera.lookAt(center);
+
+    const axesHelper = new THREE.AxesHelper(maxDim);
+    scene.add(axesHelper);
+
+    const renderScene = () => {
+      renderer.render(scene, camera);
+    };
+
+    algorithm.particles.forEach(particle => {
+      const geometry = new THREE.SphereGeometry(maxDim * 0.005, 16, 16);
+      const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(particle.position[0], particle.fitness, 0);
+      particle.domMeshReference = mesh;
+      scene.add(mesh);
+    });
+    renderScene();
+
+    const handleResize = () => {
+      width = mount.current.clientWidth;
+      height = mount.current.clientHeight;
+      renderer.setSize(width, height);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderScene();
+    };
+
+    const animate = () => {
+      renderScene();
+      frameId = window.requestAnimationFrame(animate);
+    };
+
+    const start = () => {
+      if (!frameId) {
+        frameId = requestAnimationFrame(animate);
+      }
+    };
+
+    const stop = () => {
+      cancelAnimationFrame(frameId);
+      frameId = null;
+    };
+
+    mount.current.appendChild(renderer.domElement);
+    window.addEventListener("resize", handleResize);
+    start();
+
+    controls.current = { start, stop };
+
+    return () => {
+      stop();
+      window.removeEventListener("resize", handleResize);
+      mount.current.removeChild(renderer.domElement);
+
+      scene.remove(graphMesh);
+      geometry.dispose();
+      material.dispose();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isAnimating) {
+      controls.current.start();
+    } else {
+      controls.current.stop();
     }
-  }
-}
+  }, [isAnimating]);
 
-const init = function() {
-  renderer.setSize(WIDTH, HEIGHT);
-  renderer.setClearColor(0xdddddd, 1);
-  renderer.clear();
-  scene.add(camera);
+  useEffect(() => {
+    const updateParticle = function(mesh, coordinates, color) {
+      mesh.position.x = coordinates[0];
+      mesh.position.y = coordinates[1];
+      color && mesh.material.color.setHex(color);
+    };
 
-  const light = new THREE.PointLight(0xffffff);
-  light.position.set(0, 0, 100);
-  scene.add(light);
+    for (let i = 0; i < algorithm.particles.length; i++) {
+      // move plotted particles to their next position
+      const particle = algorithm.particles[i];
+      const coordinates = [...particle.position, particle.fitness];
+      updateParticle(
+        particle.domMeshReference,
+        coordinates,
+        particle.isReplaced ? 0xffe100 : null
+      );
+    }
+  }, [iteration]);
 
-  camera.position.set(0, 0, 100);
-};
-
-const animate = function() {
-  requestAnimationFrame(() => animate());
-  renderCanvas();
-};
-
-const renderCanvas = function() {
-  renderer.render(scene, camera);
-};
-
-const initParticles = function(particles, dimension) {
-  particles.forEach(particle => {
-    createParticle(particle, dimension);
-  });
-  renderCanvas();
-};
-
-const createParticle = function(particle, dimension) {
-  const geometry = new THREE.SphereGeometry(dimension, 16, 16);
-  const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(particle.position[0], particle.fitness, 0);
-  particle.domMeshReference = mesh;
-  scene.add(mesh);
-};
-
-const updateParticle = function(mesh, coordinates) {
-  mesh.position.x = coordinates[0];
-  mesh.position.y = coordinates[1];
-  color && mesh.material.color.setHex(color);
-};
-
-const createGraph = function(pso) {
-  const xMin = pso.fitnessFunction.dimensions[0].min;
-  const xMax = pso.fitnessFunction.dimensions[0].max;
-
-  const xRange = xMax - xMin;
-  const yFunc = pso.fitnessFunction.compute;
-
-  const meshFunction = function(x, z, target) {
-    x = xRange * x + xMin;
-    var y = yFunc(x);
-    target.set(x, y, 0);
-  };
-
-  const graphGeometry = new THREE.ParametricGeometry(
-    meshFunction,
-    SEGMENTS,
-    SEGMENTS
+  return (
+    <div
+      className="vis"
+      ref={mount}
+      style={{ position: "fixed", top: 0, right: 0, bottom: 0, left: 0 }}
+    />
   );
-
-  graphGeometry.computeBoundingBox();
-
-  var material = new THREE.LineBasicMaterial({ color: 0x000000 });
-
-  const line = new THREE.Line(graphGeometry, material);
-  scene.add(line);
-
-  fitCameraToObject(graphGeometry);
-
-  initParticles(pso.particles, getMaxSizeBoundingBox(graphGeometry) * 0.005);
-};
-
-const fitCameraToObject = function(object) {
-  const center = object.boundingBox.getCenter();
-
-  const maxDim = getMaxSizeBoundingBox(object);
-  const fov = camera.fov * (Math.PI / 180);
-  let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
-
-  camera.position.z = cameraZ;
-
-  const minZ = object.boundingBox.min.z;
-  const cameraToFarEdge = minZ < 0 ? -minZ + cameraZ : cameraZ - minZ;
-
-  camera.far = cameraToFarEdge * 3;
-  camera.updateProjectionMatrix();
-  camera.lookAt(center);
-
-  const axesHelper = new THREE.AxesHelper(maxDim);
-  scene.add(axesHelper);
-};
-
-const getMaxSizeBoundingBox = function(object) {
-  const size = object.boundingBox.getSize();
-  return Math.max(size.x, size.y, size.z);
-};
-
-const onWindowResize = function() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(window.innerWidth, window.innerHeight);
-};
-
-export default FunctionPlotter2D;
+}

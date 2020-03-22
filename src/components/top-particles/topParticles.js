@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { eventBus } from "../../event-bus/eventBus";
 import "./topParticles.css";
 
-const TopParticles = ({ pso }) => {
+const TopParticles = ({ algorithm, iteration }) => {
   const [topValues, setTopValues] = useState([]);
 
   useEffect(() => {
-    eventBus.$on("iteration", () => {
-      const values = pso.particles.map(particle => [
-        ...particle.bestPosition,
-        particle.bestFitness
-      ]);
-      values.sort((a, b) => a.slice(-1)[0] - b.slice(-1)[0]);
-      setTopValues(values.slice(0, 3));
-    });
-  }, []);
+    const values = algorithm.particles.map(particle => [
+      ...particle.bestPosition,
+      particle.bestFitness
+    ]);
+    values.sort((a, b) => a.slice(-1)[0] - b.slice(-1)[0]);
+    setTopValues(values.slice(0, 3));
+  }, [iteration]);
 
   const rows = [];
   for (let i = 0; i < topValues.length; i++) {
@@ -41,7 +38,7 @@ const TopParticles = ({ pso }) => {
       <thead>
         <tr>
           <td
-            colSpan={pso.fitnessFunction.dimensions.length + 1}
+            colSpan={algorithm.fitnessFunction.dimensions.length + 1}
             align="center"
           >
             Top particles

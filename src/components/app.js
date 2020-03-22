@@ -1,39 +1,15 @@
-import React, { useState, useEffect } from "react";
-import TopParticles from "./top-particles/topParticles";
+import React from "react";
 import Runner from "../lib/evolution/runner"
-
 import "./app.css";
-
-const TIME_BETWEEN_ITERATIONS = 120;
-
+import UIRunner from "./ui-runner";
 const App = () => {
-  const [runner, setRunner] = useState(null);
-
-  useEffect(() => {
-    const runner = new Runner("PSO", "FF_Schwefel", {});
-    setRunner(runner);
-  }, []);
-
-  useEffect(() => {
-    if (runner) {
-
-      setInterval(() => {
-        runner.tick();
-      }, TIME_BETWEEN_ITERATIONS);
-
-    }
-  }, [runner]);
-
-  if (!runner) {
-    return null;
-  }
-
+  const runners = [
+    new Runner("PSO", "FF_Schwefel", { populationSize: 5 })
+  ]
   return (
     <div className="app-container">
-      <div id="functionPlotterContainer"/>
-      <TopParticles pso={runner.algorithm} />
+      {runners.map((runner, index) => <UIRunner runner={runner} key={index} updateInterval={90} />)}
     </div>
   );
 };
-
 export default App;

@@ -1,43 +1,22 @@
 const algorithmMap = require("./algorithms/algorithms");
 const functionMap = require("./optimisation-functions/functions");
-
 import Particle from "../evolution/algorithms/pso/particle";
-import FunctionPlotter3D from "../../components/plotters/plot3D";
-import FunctionPlotter2D from "../../components/plotters/plot2D";
-
 import Collaboration from "../collaboration/collaboration";
-
-import { eventBus } from "../../event-bus/eventBus";
-
 import {random} from "../utils/utils"
-
 export default class Runner {
   constructor(algorithm, ff, options) {
     this.options = {
       populationSize: 2
     };
-
+    Object.assign(this.options, options);
     this.ff = new functionMap[ff]();
     this.algorithm = new algorithmMap[algorithm](this.ff);
     this.initializePopulation();
-    Object.assign(this.options, options);
-
-    // this.collaboration = new Collaboration();
-    // this.collaboration.initialize(this.algorithm);
-
-    // this.plotter =
-    //   this.ff.dimensions.length === 2
-    //     ? new FunctionPlotter3D()
-    //     : new FunctionPlotter2D();
-    // const domElement = this.plotter.initialize(this.algorithm);
-    // const container = document.getElementById("functionPlotterContainer");
-
-    // container.appendChild(domElement);
+    this.collaboration = new Collaboration();
+    this.collaboration.initialize(this.algorithm);
   }
-
   initializePopulation() {
     let particles = [];
-
     for (let i = 0; i < this.options.populationSize; i++) {
       const uniqueId = particles.length;
       let p = new Particle(this.ff, uniqueId);
@@ -52,15 +31,11 @@ export default class Runner {
       particles.push(p);
       p.computeFitness();
     }
-
     this.algorithm.setParticles(particles);
   }
   tick() {
     this.algorithm.iterate();
-    // eventBus.$emit("iteration");
-    // this.plotter.render(pso);
-    // this.collaboration.render(pso);
+    this.collaboration.render(this.algorithm);
   }
-
   onTick() {}
 }
