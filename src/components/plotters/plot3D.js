@@ -1,34 +1,17 @@
 import * as THREE from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 export default function FunctionPlotter3D({ algorithm, iteration }) {
   const mount = useRef(null);
-  const [isAnimating] = useState(true);
-  const controls = useRef(null);
 
-  useEffect(() => {
-    let width = mount.current.clientWidth;
-    let height = mount.current.clientHeight;
-    let frameId;
-    let segments = 80;
+  const getMaxSizeBoundingBox = function(object) {
+    const size = object.boundingBox.getSize();
+    return Math.max(size.x, size.y, size.z);
+  };
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-
-    renderer.setSize(width, height);
-    renderer.setClearColor(0xdddddd, 1);
-    renderer.clear();
-    scene.add(camera);
-
-    const light = new THREE.PointLight(0xffffff);
-    light.position.set(0, 0, 1000);
-    scene.add(light);
-
-    new OrbitControls(camera, renderer.domElement);
-
+  const createGraphGeometry = (segments) => {
     const xMin = algorithm.fitnessFunction.dimensions[0].min;
     const xMax = algorithm.fitnessFunction.dimensions[0].max;
     const yMin = algorithm.fitnessFunction.dimensions[1].min;
@@ -77,6 +60,10 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
       }
     }
 
+    return graphGeometry;
+  }
+
+  const plotGraphMesh = (scene, graphGeometry, segments) => {
     const wireTexture = new THREE.ImageUtils.loadTexture("images/square.png");
     wireTexture.wrapS = wireTexture.wrapT = THREE.RepeatWrapping;
     wireTexture.repeat.set(40, 40);
@@ -93,18 +80,14 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
     const graphMesh = new THREE.Mesh(graphGeometry, wireMaterial);
     graphMesh.doubleSided = true;
     scene.add(graphMesh);
+  }
 
-    const center = graphGeometry.boundingBox.getCenter();
-
-    const getMaxSizeBoundingBox = function(object) {
-      const size = object.boundingBox.getSize();
-      return Math.max(size.x, size.y, size.z);
-    };
-
+  const zoomToFitScreen = (camera, graphGeometry) => {
     const maxDim = getMaxSizeBoundingBox(graphGeometry);
+
     const fov = camera.fov * (Math.PI / 180);
     let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
-    cameraZ *= 1.3; // zoom out a little so that objects don't fill the screen
+    cameraZ *= 1.3; 
 
     camera.position.z = cameraZ;
 
@@ -113,14 +96,13 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
 
     camera.far = cameraToFarEdge * 3;
     camera.updateProjectionMatrix();
+
+    const center = graphGeometry.boundingBox.getCenter();
     camera.lookAt(center);
+  }
 
-    const axesHelper = new THREE.AxesHelper(maxDim);
-    scene.add(axesHelper);
-
-    const renderScene = () => {
-      renderer.render(scene, camera);
-    };
+  const addParticles = (scene, graphGeometry) => {
+    const maxDim = getMaxSizeBoundingBox(graphGeometry);
 
     algorithm.particles.forEach(particle => {
       const geometry = new THREE.SphereGeometry(maxDim * 0.005, 16, 16);
@@ -134,7 +116,44 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
       particle.domMeshReference = mesh;
       scene.add(mesh);
     });
-    renderScene();
+  }
+
+  useEffect(() => {
+    const width = mount.current.clientWidth;
+    const height = mount.current.clientHeight;
+    let frameId;
+    const segments = 80;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+    const renderScene = () => {
+      renderer.render(scene, camera);
+    };
+
+    renderer.setSize(width, height);
+    renderer.setClearColor(0xdddddd, 1);
+    renderer.clear();
+    scene.add(camera);
+
+    const light = new THREE.PointLight(0xffffff);
+    light.position.set(0, 0, 10000);
+    scene.add(light);
+
+    // add controls to zoom in/out and rotate
+    new OrbitControls(camera, renderer.domElement);
+
+    const graphGeometry = createGraphGeometry(segments);
+    plotGraphMesh(scene, graphGeometry, segments);
+
+    zoomToFitScreen(camera, graphGeometry);
+    
+    // add axes
+    const axesHelper = new THREE.AxesHelper(getMaxSizeBoundingBox(graphGeometry));
+    scene.add(axesHelper);
+
+    addParticles(scene, graphGeometry);
 
     const handleResize = () => {
       width = mount.current.clientWidth;
@@ -165,8 +184,6 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
     window.addEventListener("resize", handleResize);
     start();
 
-    controls.current = { start, stop };
-
     return () => {
       stop();
       window.removeEventListener("resize", handleResize);
@@ -177,14 +194,6 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
       material.dispose();
     };
   }, []);
-
-  useEffect(() => {
-    if (isAnimating) {
-      controls.current.start();
-    } else {
-      controls.current.stop();
-    }
-  }, [isAnimating]);
 
   useEffect(() => {
     const updateParticle = function(mesh, coordinates, color) {
