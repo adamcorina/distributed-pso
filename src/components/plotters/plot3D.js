@@ -156,8 +156,8 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
     addParticles(scene, graphGeometry);
 
     const handleResize = () => {
-      width = mount.current.clientWidth;
-      height = mount.current.clientHeight;
+      const width = mount.current.clientWidth;
+      const height = mount.current.clientHeight;
       renderer.setSize(width, height);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();

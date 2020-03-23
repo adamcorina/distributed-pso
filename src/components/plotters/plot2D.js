@@ -74,10 +74,10 @@ export default function FunctionPlotter2D({ algorithm, iteration }) {
   }
 
   useEffect(() => {
-    let width = mount.current.clientWidth;
-    let height = mount.current.clientHeight;
+    const width = mount.current.clientWidth;
+    const height = mount.current.clientHeight;
     let frameId;
-    let segments = 80;
+    const segments = 80;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100000);
@@ -111,8 +111,8 @@ export default function FunctionPlotter2D({ algorithm, iteration }) {
     addParticles(scene, graphGeometry);
 
     const handleResize = () => {
-      width = mount.current.clientWidth;
-      height = mount.current.clientHeight;
+      const width = mount.current.clientWidth;
+      const height = mount.current.clientHeight;
       renderer.setSize(width, height);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
