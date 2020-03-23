@@ -3,7 +3,7 @@ const OrbitControls = require("three-orbit-controls")(THREE);
 
 import React, { useEffect, useRef } from "react";
 
-export default function FunctionPlotter3D({ algorithm, iteration }) {
+export default function FunctionPlotter3D({ population, ff, iteration }) {
   const mount = useRef(null);
 
   const getMaxSizeBoundingBox = function(object) {
@@ -12,14 +12,14 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
   };
 
   const createGraphGeometry = (segments) => {
-    const xMin = algorithm.fitnessFunction.dimensions[0].min;
-    const xMax = algorithm.fitnessFunction.dimensions[0].max;
-    const yMin = algorithm.fitnessFunction.dimensions[1].min;
-    const yMax = algorithm.fitnessFunction.dimensions[1].max;
+    const xMin = ff.dimensions[0].min;
+    const xMax = ff.dimensions[0].max;
+    const yMin = ff.dimensions[1].min;
+    const yMax = ff.dimensions[1].max;
 
     const xRange = xMax - xMin;
     const yRange = yMax - yMin;
-    const zFunc = algorithm.fitnessFunction.compute;
+    const zFunc = ff.compute;
 
     const meshFunction = function(x, y, target) {
       x = xRange * x + xMin;
@@ -104,7 +104,7 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
   const addParticles = (scene, graphGeometry) => {
     const maxDim = getMaxSizeBoundingBox(graphGeometry);
 
-    algorithm.particles.forEach(particle => {
+    population.particles.forEach(particle => {
       const geometry = new THREE.SphereGeometry(maxDim * 0.005, 16, 16);
       const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
       const mesh = new THREE.Mesh(geometry, material);
@@ -203,9 +203,9 @@ export default function FunctionPlotter3D({ algorithm, iteration }) {
       color && mesh.material.color.setHex(color);
     };
 
-    for (let i = 0; i < algorithm.particles.length; i++) {
+    for (let i = 0; i < population.particles.length; i++) {
       // move plotted particles to their next position
-      const particle = algorithm.particles[i];
+      const particle = population.particles[i];
       const coordinates = [...particle.position, particle.fitness];
       updateParticle(particle.domMeshReference, coordinates, particle.isReplaced ? 0xffe100 : null);
     }

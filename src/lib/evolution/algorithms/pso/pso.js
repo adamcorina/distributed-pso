@@ -1,57 +1,30 @@
-import { indexOfLargest } from "../../../utils/utils";
 import { random } from "../../../utils/utils";
 
 export default class PSO {
-  constructor(fitnessFunction) {
+  constructor(fitnessFunction, population) {
     this.dimensions = fitnessFunction.dimensions;
-    this.fitnessFunction = fitnessFunction;
+    this.population = population;
+    this.updateGlobalBest();
 
     this.inertiaWeight = 0.75;
     this.cognitiveWeight = 0.1;
     this.socialWeight = 0.3;
   }
 
-  setParticles(particles) {
-    this.particles = particles;
-    this.updateGlobalBest();
-
-    this.colaborativeBestPosition = this.bestPosition;
-  }
-
-  addParticle(p) {
-    this.particles.push(p);
-  }
-
-  replaceWorstParticle(bestToIntroduce) {
-    const smallestIndex = indexOfLargest(this.particles);
-    this.particles[smallestIndex].fitness = bestToIntroduce.pop();
-    this.particles[smallestIndex].position = bestToIntroduce;
-    this.particles[smallestIndex].bestFitness = this.particles[
-      smallestIndex
-    ].fitness;
-    this.particles[smallestIndex].bestPosition = [
-      ...this.particles[smallestIndex].position
-    ];
-    this.particles[smallestIndex].velocity = new Array(
-      this.fitnessFunction.dimensions.length
-    ).fill(0);
-    this.particles[smallestIndex].isReplaced = true;
-  }
-
   iterate() {
-    for (let i = 0; i < this.particles.length; i++) {
-      this.movePosition(this.particles[i]);
-      this.particles[i].computeFitness();
+    for (let i = 0; i < this.population.particles.length; i++) {
+      this.movePosition(this.population.particles[i]);
     }
+    this.population.computeFitness();
     this.updateGlobalBest();
   }
 
   initializeVelocity(particle) {
     particle.velocity = [];
-    for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
+    for (let i = 0; i < this.dimensions.length; i++) {
       let d =
-        particle.fitnessFunction.dimensions[i].max -
-        particle.fitnessFunction.dimensions[i].min;
+        this.dimensions[i].max -
+        this.dimensions[i].min;
       particle.velocity.push(random(-d, d));
     }
   }
@@ -60,7 +33,7 @@ export default class PSO {
     if (!particle.velocity) {
       this.initializeVelocity(particle);
     }
-    for (let i = 0; i < this.fitnessFunction.dimensions.length; i++) {
+    for (let i = 0; i < this.dimensions.length; i++) {
       let vMomentum = this.inertiaWeight * particle.velocity[i];
 
       let d1 = particle.bestPosition[i] - particle.position[i];
@@ -72,32 +45,28 @@ export default class PSO {
       particle.velocity[i] = vMomentum + vCognitive + vSocial;
       particle.position[i] = particle.position[i] + particle.velocity[i];
 
-      if (particle.position[i] > particle.fitnessFunction.dimensions[i].max) {
-        particle.position[i] = particle.fitnessFunction.dimensions[i].max;
+      if (particle.position[i] > this.dimensions[i].max) {
+        particle.position[i] = this.dimensions[i].max;
       }
-      if (particle.position[i] < particle.fitnessFunction.dimensions[i].min) {
-        particle.position[i] = particle.fitnessFunction.dimensions[i].min;
+      if (particle.position[i] < this.dimensions[i].min) {
+        particle.position[i] = this.dimensions[i].min;
       }
     }
   }
 
   updateGlobalBest() {
     this.bestPosition = [
-      ...this.particles[0].bestPosition,
-      this.particles[0].bestFitness
+      ...this.population.particles[0].bestPosition,
+      this.population.particles[0].bestFitness
     ];
 
-    for (let i = 1; i < this.particles.length; i++) {
-      if (this.particles[i].bestFitness < this.bestPosition.slice(-1)[0]) {
+    for (let i = 1; i < this.population.particles.length; i++) {
+      if (this.population.particles[i].bestFitness < this.bestPosition.slice(-1)[0]) {
         this.bestPosition = [
-          ...this.particles[i].bestPosition,
-          this.particles[i].bestFitness
+          ...this.population.particles[i].bestPosition,
+          this.population.particles[i].bestFitness
         ];
       }
     }
-  }
-
-  getSocialBest() {
-    return this.bestPosition;
   }
 }

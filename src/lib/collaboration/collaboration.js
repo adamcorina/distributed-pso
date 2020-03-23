@@ -37,7 +37,7 @@ export default class Collaboration {
   render(pso) {
     const bestToIntroduce = [...this.collaborativeBest];
     if (pso.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
-      pso.replaceWorstParticle(bestToIntroduce);
+      pso.population.replaceWorstParticle(bestToIntroduce);
     } else {
       if (
         numberRounding(bestToIntroduce.slice(-1)[0], 5) >

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./topParticles.css";
 
-const TopParticles = ({ algorithm, iteration }) => {
+const TopParticles = ({ population, ff, iteration }) => {
   const [topValues, setTopValues] = useState([]);
 
   useEffect(() => {
-    const values = algorithm.particles.map(particle => [
+    const values = population.particles.map(particle => [
       ...particle.bestPosition,
       particle.bestFitness
     ]);
@@ -38,7 +38,7 @@ const TopParticles = ({ algorithm, iteration }) => {
       <thead>
         <tr>
           <td
-            colSpan={algorithm.fitnessFunction.dimensions.length + 1}
+            colSpan={ff.dimensions.length + 1}
             align="center"
           >
             Top particles
