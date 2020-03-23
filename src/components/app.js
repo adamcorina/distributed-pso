@@ -1,98 +1,15 @@
-import React, { useState, useEffect } from "react";
-import {
-  FF_Sphere,
-  FF_Rastrigin,
-  FF_Schwefel,
-  FF_2D
-} from "../service/optimisation-functions/functions";
-import PSO from "../service/pso/pso";
-import Particle from "../service/pso/particle";
-import FunctionPlotter3D from "./plotters/plot3D";
-import FunctionPlotter2D from "./plotters/plot2D";
-import TopParticles from "./top-particles/topParticles";
-
-const Gun = require("gun/gun");
-require("gun/lib/not.js");
-require("gun/sea");
-
-import { eventBus } from "../event-bus/eventBus";
-
+import React from "react";
+import Runner from "../lib/evolution/runner"
 import "./app.css";
-
-const TIME_BETWEEN_ITERATIONS = 120;
-
+import UIRunner from "./ui-runner";
 const App = () => {
-  const [pso, setPSO] = useState(null);
-  const [gun] = useState(Gun(location.origin + "/gun"));
-
-  function initializePopulation() {
-    const numParticles = 10;
-    let particles = [];
-    const fitnessFunction = new FF_Schwefel();
-
-    for (let i = 0; i < numParticles; i++) {
-      const uniqueId = particles.length;
-      let p = new Particle(fitnessFunction, uniqueId);
-      particles.push(p);
-    }
-
-    const pso = new PSO(fitnessFunction, particles);
-    gun.get("global-minimum").not(function(key) {
-      gun.get(key).put({
-        position: Object.assign({}, [...pso.bestPosition])
-      });
-    });
-
-    setPSO(pso);
-  }
-
-  const globalMinimumChanged = () => {
-    gun
-      .get("global-minimum")
-      .get("position")
-      .once(position => {
-        let { _, ...coordinates } = position;
-        pso.updateColaborativeBest(Object.values(coordinates));
-      });
-  };
-
-  useEffect(() => {
-    initializePopulation();
-  }, []);
-
-  useEffect(() => {
-    if (pso) {
-      gun.get("global-minimum").on(function() {
-        globalMinimumChanged();
-      });
-      eventBus.$on("new-best", () => {
-        gun.get("global-minimum").put({
-          position: Object.assign({}, [...pso.bestPosition])
-        });
-      });
-    }
-  }, [pso]);
-
-  if (!pso) {
-    return null;
-  }
-
+  const runners = [
+    new Runner("PSO", "FF_Schwefel", { populationSize: 5 })
+  ]
   return (
     <div className="app-container">
-      {pso.fitnessFunction.dimensions.length == 2 ? (
-        <FunctionPlotter3D
-          pso={pso}
-          timeBetweenIterations={TIME_BETWEEN_ITERATIONS}
-        />
-      ) : (
-        <FunctionPlotter2D
-          pso={pso}
-          timeBetweenIterations={TIME_BETWEEN_ITERATIONS}
-        />
-      )}
-      <TopParticles pso={pso} />
+      {runners.map((runner, index) => <UIRunner runner={runner} key={index} updateInterval={90} />)}
     </div>
   );
 };
-
 export default App;

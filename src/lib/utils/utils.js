@@ -15,4 +15,8 @@ const numberRounding = function(num, digits, base = 10) {
   return Math.round(num * pow) / pow;
 };
 
-module.exports = { indexOfLargest, numberRounding };
+const random = function(min, max) {
+  return min + (max - min) * Math.random();
+}
+
+module.exports = { indexOfLargest, numberRounding, random };
