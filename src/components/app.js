@@ -6,7 +6,7 @@ import {ALGORITHMS, FUNCTIONS, SELECTION_FUNCTIONS} from "../lib/utils/constants
 
 const App = () => {
   const runners = [
-    new Runner(ALGORITHMS.GA, FUNCTIONS.FF_SCHWEFEL, { populationSize: 100, selectionFunction: SELECTION_FUNCTIONS.ROULETTE })
+    new Runner(ALGORITHMS.GA, FUNCTIONS.FF_SCHWEFEL, { populationSize: 100, selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT })
   ]
   return (
     <div className="app-container">

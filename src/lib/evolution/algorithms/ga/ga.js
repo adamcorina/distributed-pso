@@ -2,7 +2,6 @@ const selectionFunctionMappings = require("./selection/selection-functions");
 
 import { random } from "../../../utils/utils";
 
-
 export default class GA {
   constructor(fitnessFunction, population, options) {
     const numSelection = 2 * Math.round(population.individuals.length / 50);
@@ -10,7 +9,30 @@ export default class GA {
     this.dimensions = fitnessFunction.dimensions;
     this.population = population;
 
-    this.selection = new selectionFunctionMappings[options.selectionFunction || "Roulette"](numSelection);
+    this.selection = new selectionFunctionMappings[
+      options.selectionFunction || "Roulette"
+    ](numSelection);
+
+    this.updateGlobalBest();
+  }
+
+  updateGlobalBest() {
+    this.bestPosition = [
+      ...this.population.individuals[0].bestPosition,
+      this.population.individuals[0].bestFitness
+    ];
+
+    for (let i = 1; i < this.population.individuals.length; i++) {
+      if (
+        this.population.individuals[i].bestFitness <
+        this.bestPosition.slice(-1)[0]
+      ) {
+        this.bestPosition = [
+          ...this.population.individuals[i].bestPosition,
+          this.population.individuals[i].bestFitness
+        ];
+      }
+    }
   }
 
   iterate() {
@@ -50,5 +72,6 @@ export default class GA {
       }
     }
     this.population.computeFitness();
+    this.updateGlobalBest();
   }
 }

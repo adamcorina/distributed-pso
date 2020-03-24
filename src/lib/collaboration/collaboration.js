@@ -10,10 +10,10 @@ export default class Collaboration {
     this.gun = Gun(location.origin + "/gun");
     this.algorithmTag = algorithmTag
   }
-  initialize(pso) {
+  initialize(algorithm) {
     this.gun.get(`global-minimum-${this.algorithmTag}`).not(key => {
       this.gun.get(key).put({
-        position: Object.assign({}, [...pso.bestPosition])
+        position: Object.assign({}, [...algorithm.bestPosition])
       });
     });
     this.gun
@@ -35,17 +35,17 @@ export default class Collaboration {
     });
   }
 
-  render(pso) {
+  render(algorithm) {
     const bestToIntroduce = [...this.collaborativeBest];
-    if (pso.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
-      pso.population.replaceWorstParticle(bestToIntroduce);
+    if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
+      algorithm.population.replaceWorstParticle(bestToIntroduce);
     } else {
       if (
         numberRounding(bestToIntroduce.slice(-1)[0], 5) >
-        numberRounding(pso.bestPosition.slice(-1)[0], 5)
+        numberRounding(algorithm.bestPosition.slice(-1)[0], 5)
       ) {
         this.gun.get(`global-minimum-${this.algorithmTag}`).put({
-          position: Object.assign({}, [...pso.bestPosition])
+          position: Object.assign({}, [...algorithm.bestPosition])
         });
       }
     }
