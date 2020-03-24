@@ -13,8 +13,8 @@ export default class Tournament {
       // tournament round
       let best = null;
       for (let j = 0; j < this.numParticipants; j++) {
-        const index = random(0, population.length - 1, 0);
-        const ind = population[index];
+        const index = random(0, population.individuals.length - 1, 0);
+        const ind = population.individuals[index];
         if (best === null || ind.fitness < best.fitness) {
           best = ind;
         }

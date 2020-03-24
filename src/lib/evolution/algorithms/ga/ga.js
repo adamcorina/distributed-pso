@@ -1,3 +1,4 @@
+import Roulette from "./roulette";
 import Tournament from "./tournament";
 import { random } from "../../../utils/utils";
 
@@ -5,14 +6,15 @@ export default class GA {
   constructor(fitnessFunction, population) {
     this.dimensions = fitnessFunction.dimensions;
     this.population = population;
-    this.tournament = new Tournament(
-      2 * Math.round(this.population.individuals.length / 50),
-      Math.round(this.population.individuals.length / 25)
-    );
+    // this.selection = new Tournament(
+    //   2 * Math.round(this.population.individuals.length / 50),
+    //   2 * Math.round(this.population.individuals.length / 20)
+    // );
+    this.selection = new Roulette(2 * Math.round(this.population.individuals.length / 50));
   }
 
   iterate() {
-    const selected = this.tournament.execute(this.population.individuals);
+    const selected = this.selection.execute(this.population);
     for (let i = 0; i < selected.length; i += 2) {
       const parent1 = selected[i];
       const parent2 = selected[i + 1];
