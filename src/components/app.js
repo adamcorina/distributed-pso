@@ -15,9 +15,14 @@ const FUNCTIONS = {
   FF_2D: "FF_2D"
 }
 
+const SELECTION_FUNCTIONS = {
+  ROULETTE: "Roulette",
+  TOURNAMENT: "Tournament"
+}
+
 const App = () => {
   const runners = [
-    new Runner(ALGORITHMS.GA, FUNCTIONS.FF_SCHWEFEL, { populationSize: 100 })
+    new Runner(ALGORITHMS.GA, FUNCTIONS.FF_SCHWEFEL, { populationSize: 100, selectionFunction: SELECTION_FUNCTIONS.ROULETTE })
   ]
   return (
     <div className="app-container">

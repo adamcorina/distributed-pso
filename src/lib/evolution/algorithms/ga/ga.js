@@ -1,16 +1,16 @@
-import Roulette from "./roulette";
-import Tournament from "./tournament";
+const selectionFunctionMappings = require("./selection/selection-functions");
+
 import { random } from "../../../utils/utils";
 
+
 export default class GA {
-  constructor(fitnessFunction, population) {
+  constructor(fitnessFunction, population, options) {
+    const numSelection = 2 * Math.round(population.individuals.length / 50);
+
     this.dimensions = fitnessFunction.dimensions;
     this.population = population;
-    // this.selection = new Tournament(
-    //   2 * Math.round(this.population.individuals.length / 50),
-    //   2 * Math.round(this.population.individuals.length / 20)
-    // );
-    this.selection = new Roulette(2 * Math.round(this.population.individuals.length / 50));
+    
+    this.selection = new selectionFunctionMappings[options.selectionFunction || "Roulette"](numSelection);
   }
 
   iterate() {
