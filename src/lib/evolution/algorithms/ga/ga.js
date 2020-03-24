@@ -6,8 +6,8 @@ export default class GA {
     this.dimensions = fitnessFunction.dimensions;
     this.population = population;
     this.tournament = new Tournament(
-      2 * Math.round(this.population.individuals.length / 20),
-      Math.round(this.population.individuals.length / 10)
+      2 * Math.round(this.population.individuals.length / 50),
+      Math.round(this.population.individuals.length / 25)
     );
   }
 
@@ -23,13 +23,19 @@ export default class GA {
 
       //crossover
       for (let j = 0; j < this.dimensions.length; j++) {
-        const rand = random(0, 1);
+        let rand = random(0, 1);
         if (rand < 0.5) {
           child.position[j] = parent1.position[j];
           child.bestPosition[j] = parent1.position[j];
         } else {
           child.position[j] = parent2.position[j];
           child.bestPosition[j] = parent2.position[j];
+        }
+        rand = random(0, 1);
+        if (rand < 0.2) {
+          child.position[j] = (parent1.position[j] + parent2.position[j]) / 2;
+          child.bestPosition[j] =
+            (parent1.position[j] + parent2.position[j]) / 2;
         }
       }
       //mutation
