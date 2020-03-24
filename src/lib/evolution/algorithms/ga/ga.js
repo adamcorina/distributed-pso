@@ -9,7 +9,7 @@ export default class GA {
 
     this.dimensions = fitnessFunction.dimensions;
     this.population = population;
-    
+
     this.selection = new selectionFunctionMappings[options.selectionFunction || "Roulette"](numSelection);
   }
 
@@ -44,7 +44,8 @@ export default class GA {
       for (let j = 0; j < this.dimensions.length; j++) {
         const rand = random(0, 1);
         if (rand < 0.1) {
-          child.position[j] += random(0, 5);
+          const interval = this.dimensions[j].max - this.dimensions[j].min;
+          child.position[j] += random(0, interval * 0.005);
         }
       }
     }
