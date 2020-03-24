@@ -104,7 +104,7 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
   const addParticles = (scene, graphGeometry) => {
     const maxDim = getMaxSizeBoundingBox(graphGeometry);
 
-    population.particles.forEach(particle => {
+    population.individuals.forEach(particle => {
       const geometry = new THREE.SphereGeometry(maxDim * 0.005, 16, 16);
       const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
       const mesh = new THREE.Mesh(geometry, material);
@@ -203,9 +203,9 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
       color && mesh.material.color.setHex(color);
     };
 
-    for (let i = 0; i < population.particles.length; i++) {
+    for (let i = 0; i < population.individuals.length; i++) {
       // move plotted particles to their next position
-      const particle = population.particles[i];
+      const particle = population.individuals[i];
       const coordinates = [...particle.position, particle.fitness];
       updateParticle(particle.domMeshReference, coordinates, particle.isReplaced ? 0xffe100 : null);
     }

@@ -1,12 +1,12 @@
-import Particle from "./particle";
+import Individual from "./individual";
 import { random, indexOfLargest } from "../../utils/utils";
 
 export default class Population {
   constructor(populationSize, fitnessFunction) {
-    this.population = [];
+    this.individuals = [];
     this.ff = fitnessFunction;
     for (let i = 0; i < populationSize; i++) {
-      let p = new Particle(this.ff, i);
+      let p = new Individual(this.ff, i);
       for (let j = 0; j < this.ff.dimensions.length; j++) {
         const randomNumber = random(
           this.ff.dimensions[j].min,
@@ -15,33 +15,37 @@ export default class Population {
         p.position.push(randomNumber);
         p.bestPosition.push(randomNumber);
       }
-      this.population.push(p);
+      this.individuals.push(p);
     }
+    this.computeFitness();
   }
 
   replaceWorstParticle(bestToIntroduce) {
-    const smallestIndex = indexOfLargest(this.population);
-    this.population[smallestIndex].fitness = bestToIntroduce.pop();
-    this.population[smallestIndex].position = bestToIntroduce;
-    this.population[smallestIndex].bestFitness = this.population[
+    const smallestIndex = indexOfLargest(this.individuals);
+    this.individuals[smallestIndex].fitness = bestToIntroduce.pop();
+    this.individuals[smallestIndex].position = bestToIntroduce;
+    this.individuals[smallestIndex].bestFitness = this.individuals[
       smallestIndex
     ].fitness;
-    this.population[smallestIndex].bestPosition = [
-      ...this.population[smallestIndex].position
+    this.individuals[smallestIndex].bestPosition = [
+      ...this.individuals[smallestIndex].position
     ];
-    this.population[smallestIndex].velocity = new Array(
+    this.individuals[smallestIndex].velocity = new Array(
       this.ff.dimensions.length
     ).fill(0);
-    this.population[smallestIndex].isReplaced = true;
+    this.individuals[smallestIndex].isReplaced = true;
+
+    this.sortPopulation();
   }
 
-  get particles() {
-    return this.population;
+  sortPopulation(){
+    this.individuals.sort((i1, i2) => i1.fitness - i2.fitness)
   }
 
   computeFitness() {
-    for (let i = 0; i < this.population.length; i++) {
-      this.population[i].computeFitness();
+    for (let i = 0; i < this.individuals.length; i++) {
+      this.individuals[i].computeFitness();
     }
+    this.sortPopulation()
   }
 }

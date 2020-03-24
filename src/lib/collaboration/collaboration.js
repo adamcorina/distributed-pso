@@ -5,27 +5,28 @@ require("gun/sea");
 import {numberRounding} from "../utils/utils"
 
 export default class Collaboration {
-  constructor() {
+  constructor(algorithmTag) {
     this.collaborativeBest = null;
     this.gun = Gun(location.origin + "/gun");
+    this.algorithmTag = algorithmTag
   }
   initialize(pso) {
-    this.gun.get("global-minimum").not(key => {
+    this.gun.get(`global-minimum-${this.algorithmTag}`).not(key => {
       this.gun.get(key).put({
         position: Object.assign({}, [...pso.bestPosition])
       });
     });
     this.gun
-      .get("global-minimum")
+      .get(`global-minimum-${this.algorithmTag}`)
       .get("position")
       .once(position => {
         let { _, ...coordinates } = position;
         this.collaborativeBest = Object.values(coordinates);
       });
 
-    this.gun.get("global-minimum").on(() => {
+    this.gun.get(`global-minimum-${this.algorithmTag}`).on(() => {
       this.gun
-        .get("global-minimum")
+        .get(`global-minimum-${this.algorithmTag}`)
         .get("position")
         .once(position => {
           let { _, ...coordinates } = position;
@@ -43,7 +44,7 @@ export default class Collaboration {
         numberRounding(bestToIntroduce.slice(-1)[0], 5) >
         numberRounding(pso.bestPosition.slice(-1)[0], 5)
       ) {
-        this.gun.get("global-minimum").put({
+        this.gun.get(`global-minimum-${this.algorithmTag}`).put({
           position: Object.assign({}, [...pso.bestPosition])
         });
       }

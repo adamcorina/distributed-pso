@@ -12,8 +12,8 @@ export default class PSO {
   }
 
   iterate() {
-    for (let i = 0; i < this.population.particles.length; i++) {
-      this.movePosition(this.population.particles[i]);
+    for (let i = 0; i < this.population.individuals.length; i++) {
+      this.movePosition(this.population.individuals[i]);
     }
     this.population.computeFitness();
     this.updateGlobalBest();
@@ -56,15 +56,15 @@ export default class PSO {
 
   updateGlobalBest() {
     this.bestPosition = [
-      ...this.population.particles[0].bestPosition,
-      this.population.particles[0].bestFitness
+      ...this.population.individuals[0].bestPosition,
+      this.population.individuals[0].bestFitness
     ];
 
-    for (let i = 1; i < this.population.particles.length; i++) {
-      if (this.population.particles[i].bestFitness < this.bestPosition.slice(-1)[0]) {
+    for (let i = 1; i < this.population.individuals.length; i++) {
+      if (this.population.individuals[i].bestFitness < this.bestPosition.slice(-1)[0]) {
         this.bestPosition = [
-          ...this.population.particles[i].bestPosition,
-          this.population.particles[i].bestFitness
+          ...this.population.individuals[i].bestPosition,
+          this.population.individuals[i].bestFitness
         ];
       }
     }

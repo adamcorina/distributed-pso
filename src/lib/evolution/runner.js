@@ -12,13 +12,13 @@ export default class Runner {
     this.ff = new functionMap[ff]();
     this.population = new Population(this.options.populationSize, this.ff);
     this.algorithm = new algorithmMap[algorithm](this.ff, this.population);
-    this.collaboration = new Collaboration();
-    this.collaboration.initialize(this.algorithm);
+    //this.collaboration = new Collaboration(algorithm);
+    //this.collaboration.initialize(this.algorithm);
   }
 
   tick() {
     this.algorithm.iterate();
-    this.collaboration.render(this.algorithm);
+    //this.collaboration.render(this.algorithm);
   }
   onTick() {}
 }

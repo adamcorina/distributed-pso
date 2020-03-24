@@ -4,7 +4,8 @@ import "./app.css";
 import UIRunner from "./ui-runner";
 
 const ALGORITHMS = {
-  PSO: "PSO"
+  PSO: "PSO",
+  GA: "GA"
 }
 
 const FUNCTIONS = {
@@ -16,7 +17,7 @@ const FUNCTIONS = {
 
 const App = () => {
   const runners = [
-    new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_2D, { populationSize: 5 })
+    new Runner(ALGORITHMS.GA, FUNCTIONS.FF_SCHWEFEL, { populationSize: 100 })
   ]
   return (
     <div className="app-container">
