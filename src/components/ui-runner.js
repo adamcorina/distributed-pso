@@ -5,10 +5,10 @@ import TopParticles from "./top-particles/topParticles"
 
 import "./ui-runner.css";
 
-export function CanvasPlotter({ algorithm, iteration }) {
-  return algorithm.fitnessFunction.dimensions.length === 2 ? (
-    <FunctionPlotter3D algorithm={algorithm} iteration={iteration} />
-  ) : <FunctionPlotter2D algorithm={algorithm} iteration={iteration} />;
+export function CanvasPlotter({ population, ff, iteration }) {
+  return ff.dimensions.length === 2 ? (
+    <FunctionPlotter3D population={population} ff={ff} iteration={iteration} />
+  ) : <FunctionPlotter2D population={population} ff={ff} iteration={iteration} />;
 }
 
 export default function UIRunner({ runner, updateInterval = 150 }) {
@@ -28,7 +28,8 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
           return (
             <CanvasPlotter
               key={index}
-              algorithm={runner.algorithm}
+              population={runner.population}
+              ff={runner.ff}
               iteration={seconds}
             />
           );
@@ -37,7 +38,8 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
           return (
             <TopParticles
               key={index}
-              algorithm={runner.algorithm}
+              population={runner.population}
+              ff={runner.ff}
               iteration={seconds}
             />
           );

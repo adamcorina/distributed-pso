@@ -6,7 +6,7 @@ class FF_Sphere {
     ];
   }
 
-  compute(x, y) {
+  compute(x = 0, y = 0) {
     const f = x * x + y * y;
     return f / 10;
   };
@@ -20,7 +20,7 @@ class FF_Rastrigin {
     ];
   }
 
-  compute(x, y) {
+  compute(x = 0, y = 0) {
     const f =
       20 +
       x * x +
@@ -38,7 +38,7 @@ class FF_Schwefel {
     ];
   }
 
-  compute(x, y) {
+  compute(x = 0, y = 0) {
     const f =
       418.9829 * 3 -
       (x * Math.sin(Math.sqrt(Math.abs(x))) +
@@ -52,7 +52,7 @@ class FF_2D {
     this.dimensions = [{ min: 0, max: 2 }];
   }
 
-  compute(x) {
+  compute(x = 0) {
     const f = x * Math.sin(4 * Math.PI * Math.abs(x - 1));
     return f;
   };

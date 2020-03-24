@@ -1,4 +1,4 @@
-export default class Particle {
+export default class Individual {
   constructor(fitnessFunction, id) {
     this.id = id;
     this.position = [];

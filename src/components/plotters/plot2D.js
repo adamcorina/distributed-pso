@@ -4,7 +4,7 @@ const OrbitControls = require("three-orbit-controls")(THREE);
 
 import React, { useEffect, useRef } from "react";
 
-export default function FunctionPlotter2D({ algorithm, iteration }) {
+export default function FunctionPlotter2D({ population, ff, iteration }) {
   const mount = useRef(null);
 
   const getMaxSizeBoundingBox = function(object) {
@@ -13,11 +13,11 @@ export default function FunctionPlotter2D({ algorithm, iteration }) {
   };
 
   const createGraphGeometry = (segments) => {
-    const xMin = algorithm.fitnessFunction.dimensions[0].min;
-    const xMax = algorithm.fitnessFunction.dimensions[0].max;
+    const xMin = ff.dimensions[0].min;
+    const xMax = ff.dimensions[0].max;
 
     const xRange = xMax - xMin;
-    const yFunc = algorithm.fitnessFunction.compute;
+    const yFunc = ff.compute;
 
     const meshFunction = function(x, z, target) {
       x = xRange * x + xMin;
@@ -63,7 +63,7 @@ export default function FunctionPlotter2D({ algorithm, iteration }) {
   const addParticles = (scene, graphGeometry) => {
     const maxDim = getMaxSizeBoundingBox(graphGeometry);
 
-    algorithm.particles.forEach(particle => {
+    population.individuals.forEach(particle => {
       const geometry = new THREE.SphereGeometry(maxDim * 0.005, 16, 16);
       const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
       const mesh = new THREE.Mesh(geometry, material);
@@ -74,10 +74,10 @@ export default function FunctionPlotter2D({ algorithm, iteration }) {
   }
 
   useEffect(() => {
-    let width = mount.current.clientWidth;
-    let height = mount.current.clientHeight;
+    const width = mount.current.clientWidth;
+    const height = mount.current.clientHeight;
     let frameId;
-    let segments = 80;
+    const segments = 80;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100000);
@@ -111,8 +111,8 @@ export default function FunctionPlotter2D({ algorithm, iteration }) {
     addParticles(scene, graphGeometry);
 
     const handleResize = () => {
-      width = mount.current.clientWidth;
-      height = mount.current.clientHeight;
+      const width = mount.current.clientWidth;
+      const height = mount.current.clientHeight;
       renderer.setSize(width, height);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
@@ -157,9 +157,9 @@ export default function FunctionPlotter2D({ algorithm, iteration }) {
       color && mesh.material.color.setHex(color);
     };
 
-    for (let i = 0; i < algorithm.particles.length; i++) {
+    for (let i = 0; i < population.individuals.length; i++) {
       // move plotted particles to their next position
-      const particle = algorithm.particles[i];
+      const particle = population.individuals[i];
       const coordinates = [...particle.position, particle.fitness];
       updateParticle(
         particle.domMeshReference,

@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./topParticles.css";
 
-const TopParticles = ({ algorithm, iteration }) => {
+const TopParticles = ({ population, ff, iteration }) => {
   const [topValues, setTopValues] = useState([]);
 
   useEffect(() => {
-    const values = algorithm.particles.map(particle => [
-      ...particle.bestPosition,
-      particle.bestFitness
+    const values = population.individuals.map(particle => [
+      ...particle.position,
+      particle.fitness
     ]);
-    values.sort((a, b) => a.slice(-1)[0] - b.slice(-1)[0]);
     setTopValues(values.slice(0, 3));
   }, [iteration]);
 
@@ -38,7 +37,7 @@ const TopParticles = ({ algorithm, iteration }) => {
       <thead>
         <tr>
           <td
-            colSpan={algorithm.fitnessFunction.dimensions.length + 1}
+            colSpan={ff.dimensions.length + 1}
             align="center"
           >
             Top particles

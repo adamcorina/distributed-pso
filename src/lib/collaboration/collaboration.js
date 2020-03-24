@@ -5,27 +5,28 @@ require("gun/sea");
 import {numberRounding} from "../utils/utils"
 
 export default class Collaboration {
-  constructor() {
+  constructor(algorithmTag) {
     this.collaborativeBest = null;
     this.gun = Gun(location.origin + "/gun");
+    this.algorithmTag = algorithmTag
   }
-  initialize(pso) {
-    this.gun.get("global-minimum").not(key => {
+  initialize(algorithm) {
+    this.gun.get(`global-minimum-${this.algorithmTag}`).not(key => {
       this.gun.get(key).put({
-        position: Object.assign({}, [...pso.bestPosition])
+        position: Object.assign({}, [...algorithm.bestPosition])
       });
     });
     this.gun
-      .get("global-minimum")
+      .get(`global-minimum-${this.algorithmTag}`)
       .get("position")
       .once(position => {
         let { _, ...coordinates } = position;
         this.collaborativeBest = Object.values(coordinates);
       });
 
-    this.gun.get("global-minimum").on(() => {
+    this.gun.get(`global-minimum-${this.algorithmTag}`).on(() => {
       this.gun
-        .get("global-minimum")
+        .get(`global-minimum-${this.algorithmTag}`)
         .get("position")
         .once(position => {
           let { _, ...coordinates } = position;
@@ -34,17 +35,17 @@ export default class Collaboration {
     });
   }
 
-  render(pso) {
+  render(algorithm) {
     const bestToIntroduce = [...this.collaborativeBest];
-    if (pso.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
-      pso.replaceWorstParticle(bestToIntroduce);
+    if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
+      algorithm.population.replaceWorstParticle(bestToIntroduce);
     } else {
       if (
         numberRounding(bestToIntroduce.slice(-1)[0], 5) >
-        numberRounding(pso.bestPosition.slice(-1)[0], 5)
+        numberRounding(algorithm.bestPosition.slice(-1)[0], 5)
       ) {
-        this.gun.get("global-minimum").put({
-          position: Object.assign({}, [...pso.bestPosition])
+        this.gun.get(`global-minimum-${this.algorithmTag}`).put({
+          position: Object.assign({}, [...algorithm.bestPosition])
         });
       }
     }
