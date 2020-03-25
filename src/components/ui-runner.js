@@ -1,43 +1,75 @@
 import React, { useEffect, useState } from "react";
 import FunctionPlotter3D from "./plotters/plot3D";
 import FunctionPlotter2D from "./plotters/plot2D";
-import TopParticles from "./top-particles/topParticles"
+import TopParticles from "./top-particles/topParticles";
+import Controls from "./controls/controls";
 
 import "./ui-runner.css";
 
 export function CanvasPlotter({ population, ff, iteration }) {
   return ff.dimensions.length === 2 ? (
     <FunctionPlotter3D population={population} ff={ff} iteration={iteration} />
-  ) : <FunctionPlotter2D population={population} ff={ff} iteration={iteration} />;
+  ) : (
+    <FunctionPlotter2D population={population} ff={ff} iteration={iteration} />
+  );
 }
 
 export default function UIRunner({ runner, updateInterval = 150 }) {
+  const timestamp = Date.now();
   const [seconds, setSeconds] = useState(0);
-  const [plotters] = useState(["canvas", "table"]);
-  useEffect(() => {
+  const [plotters, setPlotters] = useState([
+    { type: "canvas", key: "canvas" + timestamp },
+    { type: "table", key: "canvas" + timestamp }
+  ]);
+  const [intervalRef, setIntervalRef] = useState(null);
+
+  const onStopCallback = () => {
+    clearInterval(intervalRef);
+  };
+
+  const onStartCallback = () => {
+    const timestamp = Date.now();
+    runner.initializePopulation();
+
+    clearInterval(intervalRef);
+    setPlotters([
+      { type: "canvas", key: "canvas" + timestamp },
+      { type: "table", key: "canvas" + timestamp }
+    ]);
+    run();
+  };
+
+  const run = () => {
     const interval = setInterval(() => {
       runner.tick();
       setSeconds(seconds => seconds + 1);
     }, updateInterval);
-    return () => clearInterval(interval);
+
+    setIntervalRef(interval);
+  };
+
+  useEffect(() => {
+    run();
+    return () => clearInterval(intervalRef);
   }, []);
+
   return (
     <div className="runner">
-      {plotters.map((type, index) => {
-        if (type === "canvas") {
+      {plotters.map(plotter => {
+        if (plotter.type === "canvas") {
           return (
             <CanvasPlotter
-              key={index}
+              key={plotter.key}
               population={runner.population}
               ff={runner.ff}
               iteration={seconds}
             />
           );
         }
-        if(type === "table") {
+        if (plotter.type === "table") {
           return (
             <TopParticles
-              key={index}
+              key={plotter.key}
               population={runner.population}
               ff={runner.ff}
               iteration={seconds}
@@ -45,6 +77,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
           );
         }
       })}
+      <Controls stop={onStopCallback} start={onStartCallback} />
     </div>
   );
 }

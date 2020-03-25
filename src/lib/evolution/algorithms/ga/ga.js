@@ -16,6 +16,11 @@ export default class GA {
     this.updateGlobalBest();
   }
 
+  setPopulation(population) {
+    this.population = population;
+    this.updateGlobalBest();
+  }
+
   updateGlobalBest() {
     this.bestPosition = [
       ...this.population.individuals[0].bestPosition,

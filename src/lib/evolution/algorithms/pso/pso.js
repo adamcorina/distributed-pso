@@ -11,6 +11,11 @@ export default class PSO {
     this.socialWeight = 0.3;
   }
 
+  setPopulation(population) {
+    this.population = population;
+    this.updateGlobalBest();
+  }
+
   iterate() {
     for (let i = 0; i < this.population.individuals.length; i++) {
       this.movePosition(this.population.individuals[i]);

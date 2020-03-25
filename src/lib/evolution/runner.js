@@ -11,9 +11,18 @@ export default class Runner {
     Object.assign(this.options, options);
     this.ff = new functionMap[ff]();
     this.population = new Population(this.options.populationSize, this.ff);
-    this.algorithm = new algorithmMap[algorithm](this.ff, this.population, this.options);
+    this.algorithm = new algorithmMap[algorithm](
+      this.ff,
+      this.population,
+      this.options
+    );
     this.collaboration = new Collaboration(algorithm);
     this.collaboration.initialize(this.algorithm);
+  }
+
+  initializePopulation() {
+    this.population = new Population(this.options.populationSize, this.ff);
+    this.algorithm.setPopulation(this.population);
   }
 
   tick() {
