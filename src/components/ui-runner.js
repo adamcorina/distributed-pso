@@ -16,6 +16,7 @@ export function CanvasPlotter({ population, ff, iteration }) {
 
 export default function UIRunner({ runner, updateInterval = 150 }) {
   const timestamp = Date.now();
+  let interval = null;
   const [seconds, setSeconds] = useState(0);
   const [plotters, setPlotters] = useState([
     { type: "canvas", key: "canvas" + timestamp },
@@ -28,29 +29,35 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
   };
 
   const onStartCallback = () => {
-    const timestamp = Date.now();
-    runner.initializePopulation();
+    runner.changeSpecifications();
+  };
 
-    clearInterval(intervalRef);
+  const onSpecificationsChangeCallback = () => {
+    const timestamp = Date.now();
     setPlotters([
       { type: "canvas", key: "canvas" + timestamp },
       { type: "table", key: "canvas" + timestamp }
     ]);
+    
     run();
-  };
+  }
 
-  const run = () => {
-    const interval = setInterval(() => {
+  const run = () => {  
+    clearInterval(interval);
+
+    interval = setInterval(() => {
       runner.tick();
       setSeconds(seconds => seconds + 1);
     }, updateInterval);
-
     setIntervalRef(interval);
+
   };
 
   useEffect(() => {
+    runner.registerCallback(onSpecificationsChangeCallback);
+
     run();
-    return () => clearInterval(intervalRef);
+    return () => clearInterval(interval);
   }, []);
 
   return (

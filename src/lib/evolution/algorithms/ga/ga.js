@@ -3,17 +3,14 @@ const selectionFunctionMappings = require("./selection/selection-functions");
 import { random } from "../../../utils/utils";
 
 export default class GA {
-  constructor(fitnessFunction, population, options) {
+  constructor(fitnessFunction, options) {
     const numSelection = 2 * Math.round(population.individuals.length / 50);
 
     this.dimensions = fitnessFunction.dimensions;
-    this.population = population;
 
     this.selection = new selectionFunctionMappings[
       options.selectionFunction || "Roulette"
     ](numSelection);
-
-    this.updateGlobalBest();
   }
 
   setPopulation(population) {
@@ -22,6 +19,10 @@ export default class GA {
   }
 
   updateGlobalBest() {
+    if(!this.population.individuals.length){
+      return;
+    }
+
     this.bestPosition = [
       ...this.population.individuals[0].bestPosition,
       this.population.individuals[0].bestFitness

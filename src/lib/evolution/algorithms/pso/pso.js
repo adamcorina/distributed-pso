@@ -1,10 +1,8 @@
 import { random } from "../../../utils/utils";
 
 export default class PSO {
-  constructor(fitnessFunction, population) {
+  constructor(fitnessFunction) {
     this.dimensions = fitnessFunction.dimensions;
-    this.population = population;
-    this.updateGlobalBest();
 
     this.inertiaWeight = 0.75;
     this.cognitiveWeight = 0.1;
@@ -60,6 +58,10 @@ export default class PSO {
   }
 
   updateGlobalBest() {
+    if(!this.population.individuals.length){
+      return;
+    }
+
     this.bestPosition = [
       ...this.population.individuals[0].bestPosition,
       this.population.individuals[0].bestFitness
