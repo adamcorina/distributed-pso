@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import Runner from "../lib/evolution/runner";
 import "./app.css";
 import UIRunner from "./ui-runner";
-import {
-  ALGORITHMS,
-  FUNCTIONS,
-  SELECTION_FUNCTIONS
-} from "../lib/utils/constants";
+const ALGORITHMS = require("../lib/utils/constants").ALGORITHMS;
+const FUNCTIONS = require("../lib/utils/constants").FUNCTIONS;
+const SELECTION_FUNCTIONS = require("../lib/utils/constants").SELECTION_FUNCTIONS;
 
 const App = () => {
   const [runners, setRunners] = useState([]);

@@ -24,25 +24,25 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
   ]);
   const [intervalRef, setIntervalRef] = useState(null);
 
-  const onStopCallback = () => {
+  const onClickStopCallback = () => {
     clearInterval(intervalRef);
   };
 
-  const onStartCallback = () => {
-    runner.changeSpecifications();
+  const onClickStartCallback = () => {
+    runner.resetRunner();
   };
 
-  const onSpecificationsChangeCallback = () => {
+  const resetUI = () => {
     const timestamp = Date.now();
     setPlotters([
       { type: "canvas", key: "canvas" + timestamp },
       { type: "table", key: "canvas" + timestamp }
     ]);
-    
-    run();
-  }
 
-  const run = () => {  
+    run();
+  };
+
+  const run = () => {
     clearInterval(interval);
 
     interval = setInterval(() => {
@@ -50,13 +50,11 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
       setSeconds(seconds => seconds + 1);
     }, updateInterval);
     setIntervalRef(interval);
-
   };
 
   useEffect(() => {
-    runner.registerCallback(onSpecificationsChangeCallback);
-
-    run();
+    runner.registerSpecificationChangesCallback(resetUI);
+    runner.startRunner();
     return () => clearInterval(interval);
   }, []);
 
@@ -84,7 +82,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
           );
         }
       })}
-      <Controls stop={onStopCallback} start={onStartCallback} />
+      <Controls stop={onClickStopCallback} start={onClickStartCallback} />
     </div>
   );
 }

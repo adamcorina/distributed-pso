@@ -12,10 +12,10 @@ export default class Collaboration {
     this.onChangesCallback = onChangesCallback;
   }
 
-  initialize(){
-    this.gun.get(`global-minimum-${this.algorithmTag}`).on(() => {
+  initialize() {
+    this.gun.get("global-minimum").get("position").on(() => {
       this.gun
-        .get(`global-minimum-${this.algorithmTag}`)
+        .get("global-minimum")
         .get("position")
         .once(position => {
           let { _, ...coordinates } = position;
@@ -39,20 +39,9 @@ export default class Collaboration {
     this.gun.get("optimization").put({ algorithm: algorithmTag });
   }
 
-  initializeAlgorithm(algorithm) {
-    this.gun.get("optimization").not(key => {
-      this.gun.get(key).put({
-        algorithm: this.algorithmTag
-      });
-    });
-
-    this.gun.get(`global-minimum-${this.algorithmTag}`).not(key => {
-      this.gun.get(key).put({
-        position: Object.assign({}, [...algorithm.bestPosition])
-      });
-    });
+  initializeAlgorithm() {
     this.gun
-      .get(`global-minimum-${this.algorithmTag}`)
+      .get("global-minimum")
       .get("position")
       .once(position => {
         let { _, ...coordinates } = position;
@@ -69,7 +58,7 @@ export default class Collaboration {
         numberRounding(bestToIntroduce.slice(-1)[0], 5) >
         numberRounding(algorithm.bestPosition.slice(-1)[0], 5)
       ) {
-        this.gun.get(`global-minimum-${this.algorithmTag}`).put({
+        this.gun.get("global-minimum").put({
           position: Object.assign({}, [...algorithm.bestPosition])
         });
       }

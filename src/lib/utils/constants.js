@@ -1,16 +1,18 @@
-export const ALGORITHMS = {
+const ALGORITHMS = {
   PSO: "PSO",
   GA: "GA"
 };
 
-export const FUNCTIONS = {
+const FUNCTIONS = {
   FF_SPHERE: "FF_Sphere",
   FF_RASTRIGIN: "FF_Rastrigin",
   FF_SCHWEFEL: "FF_Schwefel",
   FF_2D: "FF_2D"
 };
 
-export const SELECTION_FUNCTIONS = {
+const SELECTION_FUNCTIONS = {
   ROULETTE: "Roulette",
   TOURNAMENT: "Tournament"
 };
+
+module.exports = {ALGORITHMS, FUNCTIONS, SELECTION_FUNCTIONS}

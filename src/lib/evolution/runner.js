@@ -4,33 +4,31 @@ import Collaboration from "../collaboration/collaboration";
 import Population from "./algorithms/population";
 
 export default class Runner {
-  constructor(algorithm, ff, options) {
+  constructor(algorithmTag, ff, options) {
     this.options = {
       populationSize: 2,
-      algorithmTag: algorithm
+      algorithmTag: algorithmTag
     };
     Object.assign(this.options, options);
 
-    this.ff = new functionMap[ff]();
-    this.algorithm = new algorithmMap[algorithm](this.ff, this.options);
+    this.onSpecificationChangesCallbacks = [];
 
+    this.ff = new functionMap[ff]();
     this.population = new Population(this.options.populationSize, this.ff);
+    this.algorithm = new algorithmMap[algorithmTag](this.ff, this.options);
     this.algorithm.setPopulation(this.population);
     this.collaboration = new Collaboration(
-      algorithm,
+      algorithmTag,
       this.onSpecificationChanges.bind(this)
     );
-    this.onChangeCallbacks = [];
-    this.collaboration.initialize();
-    this.collaboration.initializeAlgorithm(this.algorithm);
   }
 
-  registerCallback(callback) {
-    this.onChangeCallbacks.push(callback);
+  registerSpecificationChangesCallback(callback) {
+    this.onSpecificationChangesCallbacks.push(callback);
   }
 
   changeSpecifications(options) {
-      this.collaboration.changeAlgorithm(options ? options.algorithmTag : this.options.algorithmTag);
+      this.collaboration.changeAlgorithm(options.algorithmTag);
   }
 
   onSpecificationChanges(options) {
@@ -39,16 +37,22 @@ export default class Runner {
       this.ff,
       this.options
     );
-    this.startAlgorithm.call(this);
-    this.onChangeCallbacks.forEach(callback => {
+    this.population = new Population(this.options.populationSize, this.ff);
+    this.algorithm.setPopulation(this.population);
+    this.collaboration.initializeAlgorithm();
+
+    this.onSpecificationChangesCallbacks.forEach(callback => {
       callback();
     });
   }
 
-  startAlgorithm() {
-    this.population = new Population(this.options.populationSize, this.ff);
-    this.algorithm.setPopulation(this.population);
-    this.collaboration.initializeAlgorithm(this.algorithm);
+  resetRunner() {
+    this.changeSpecifications(this.options);
+  }
+
+  startRunner() {
+    this.collaboration.initialize();
+    this.collaboration.initializeAlgorithm();
   }
 
   tick() {
