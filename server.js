@@ -33,12 +33,8 @@ gun
   .get("optimization")
   .get("function")
   .once(functionTag => {
-    let ff = new functionMap[functionTag]();
-    let coordinates = [];
-    for (let j = 0; j < ff.dimensions.length; j++) {
-      const randomNumber = random(ff.dimensions[j].min, ff.dimensions[j].max);
-      coordinates.push(randomNumber);
-    }
+    const ff = new functionMap[functionTag]();
+    const coordinates = new Array(ff.dimensions.length).fill(Number.MAX_VALUE);
     gun.get("global-minimum").not(key => {
       gun.get(key).put({
         position: Object.assign({}, [...coordinates])

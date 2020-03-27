@@ -13,15 +13,18 @@ export default class Collaboration {
   }
 
   initialize() {
-    this.gun.get("global-minimum").get("position").on(() => {
-      this.gun
-        .get("global-minimum")
-        .get("position")
-        .once(position => {
-          let { _, ...coordinates } = position;
-          this.collaborativeBest = Object.values(coordinates);
-        });
-    });
+    this.gun
+      .get("global-minimum")
+      .get("position")
+      .on(() => {
+        this.gun
+          .get("global-minimum")
+          .get("position")
+          .once(position => {
+            let { _, ...coordinates } = position;
+            this.collaborativeBest = Object.values(coordinates);
+          });
+      });
 
     this.gun.get("optimization").on(() => {
       this.gun
@@ -37,9 +40,19 @@ export default class Collaboration {
   changeAlgorithm(algorithmTag) {
     this.algorithmTag = algorithmTag;
     this.gun.get("optimization").put({ algorithm: algorithmTag });
+    this.gun.get("global-minimum").put({
+      position: Object.assign({}, [
+        Number.MAX_VALUE,
+        Number.MAX_VALUE,
+        Number.MAX_VALUE
+      ])
+    });
   }
 
   render(algorithm) {
+    if (!this.collaborativeBest) {
+      return;
+    }
     const bestToIntroduce = [...this.collaborativeBest];
     if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
       algorithm.population.replaceWorstParticle(bestToIntroduce);

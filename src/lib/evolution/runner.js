@@ -39,7 +39,6 @@ export default class Runner {
     );
     this.population = new Population(this.options.populationSize, this.ff);
     this.algorithm.setPopulation(this.population);
-    this.collaboration.collaborativeBest = this.algorithm.bestPosition;
 
     this.onSpecificationChangesCallbacks.forEach(callback => {
       callback();
