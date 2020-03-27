@@ -65,7 +65,7 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
 
     population.individuals.forEach(particle => {
       const geometry = new THREE.SphereGeometry(maxDim * 0.005, 16, 16);
-      const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
+      const material = new THREE.MeshLambertMaterial({ color: 0x000000 });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(particle.position[0], particle.fitness, 0);
       particle.domMeshReference = mesh;
@@ -106,6 +106,11 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
 
     // add axes
     const axesHelper = new THREE.AxesHelper(getMaxSizeBoundingBox(graphGeometry));
+
+    var colors = axesHelper.geometry.attributes.color;
+    colors.setXYZ(1, 165, 165, 165);
+    colors.setXYZ(3, 165, 165, 165);
+    
     scene.add(axesHelper);
 
     addParticles(scene, graphGeometry);
