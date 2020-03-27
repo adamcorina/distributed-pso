@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 
-import { ALGORITHMS } from "../../lib/utils/constants";
+import { ALGORITHMS, FUNCTIONS } from "../../lib/utils/constants";
 
 import "./controls.css";
 
-const Controls = ({ pause, start, changeAlgorithm, playState, algorithmTag }) => {
+const Controls = ({ pause, start, changeAlgorithm, changeFunction, playState, algorithmTag, functionTag }) => {
   return (
     <table className="controls">
       <tr>
@@ -23,12 +23,24 @@ const Controls = ({ pause, start, changeAlgorithm, playState, algorithmTag }) =>
       </tr>
       <tr>
         <td colspan="1">
-          <div>Algorithm:</div>
+          <div className="description">Algorithm:</div>
         </td>
         <td colspan="2">
           <Dropdown options={Object.values(ALGORITHMS)} value={algorithmTag} onChange={
             (e) => {
               changeAlgorithm(e.value);
+            }
+          }/>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="1">
+          <div className="description">Function:</div>
+        </td>
+        <td colspan="2">
+          <Dropdown options={Object.values(FUNCTIONS)} value={functionTag} onChange={
+            (e) => {
+              changeFunction(e.value);
             }
           }/>
         </td>

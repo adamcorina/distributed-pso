@@ -5,10 +5,11 @@ require("gun/sea");
 import { numberRounding } from "../utils/utils";
 
 export default class Collaboration {
-  constructor(algorithmTag, onChangesCallback) {
+  constructor(algorithmTag, functionTag, onChangesCallback) {
     this.collaborativeBest = null;
     this.gun = Gun(location.origin + "/gun");
     this.algorithmTag = algorithmTag;
+    this.functionTag = functionTag
     this.onChangesCallback = onChangesCallback;
   }
 
@@ -30,10 +31,28 @@ export default class Collaboration {
       this.gun
         .get("optimization")
         .get("algorithm")
-        .once(algorithm => {
+        .once((algorithm) => {
           this.algorithmTag = algorithm;
-          this.onChangesCallback({ algorithmTag: this.algorithmTag });
         });
+        this.gun
+        .get("optimization")
+        .get("ff")
+        .once((ff) => {
+          this.functionTag = ff;
+        });
+        this.onChangesCallback({ algorithmTag: this.algorithmTag, functionTag: this.functionTag });
+    });
+  }
+
+  changeFunction(functionTag) {
+    this.functionTag = functionTag;
+    this.gun.get("optimization").put({ ff: functionTag });
+    this.gun.get("global-minimum").put({
+      position: Object.assign({}, [
+        Number.MAX_VALUE,
+        Number.MAX_VALUE,
+        Number.MAX_VALUE
+      ])
     });
   }
 

@@ -13,8 +13,6 @@ const ALGORITHMS = require("./src/lib/utils/constants").ALGORITHMS;
 const FUNCTIONS = require("./src/lib/utils/constants").FUNCTIONS;
 const functionMap = require("./src/lib/evolution/optimisation-functions/functions");
 
-const random = require("./src/lib/utils/utils").random;
-
 app.use(Gun.serve);
 app.use(webpackHotMiddleware(compiler));
 app.use(webpackDevMiddleware(compiler));
@@ -25,13 +23,13 @@ const gun = Gun({ file: "db/data", web: server });
 gun.get("optimization").not(key => {
   gun.get(key).put({
     algorithm: ALGORITHMS.PSO,
-    function: FUNCTIONS.FF_SCHWEFEL
+    ff: FUNCTIONS.FF_SCHWEFEL
   });
 });
 
 gun
   .get("optimization")
-  .get("function")
+  .get("ff")
   .once(functionTag => {
     const ff = new functionMap[functionTag]();
     const coordinates = new Array(ff.dimensions.length).fill(Number.MAX_VALUE);

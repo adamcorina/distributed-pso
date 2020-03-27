@@ -48,6 +48,10 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
     runner.changeSpecifications({ algorithmTag });
   };
 
+  const onChangeFunctionCallback = functionTag => {
+    runner.changeSpecifications({ functionTag });
+  };
+
   const resetUI = () => {
     setPlayState(PLAY_STATE.PAUSE);
     const timestamp = Date.now();
@@ -103,8 +107,10 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
         pause={onClickPauseCallback}
         start={onClickStartCallback}
         changeAlgorithm={onChangeAlgorithmCallback}
+        changeFunction={onChangeFunctionCallback}
         playState={playState}
         algorithmTag={runner.options.algorithmTag}
+        functionTag={runner.options.functionTag}
       />
     </div>
   );
