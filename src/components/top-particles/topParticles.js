@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Draggable from "react-draggable";
+
 import "./topParticles.css";
 
 const TopParticles = ({ population, ff, iteration }) => {
@@ -33,19 +35,18 @@ const TopParticles = ({ population, ff, iteration }) => {
   }
 
   return (
-    <table className="top-particles">
-      <thead>
-        <tr>
-          <td
-            colSpan={ff.dimensions.length + 1}
-            align="center"
-          >
-            Top particles
-          </td>
-        </tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
+    <Draggable>
+      <table className="top-particles">
+        <thead>
+          <tr>
+            <td colSpan={ff.dimensions.length + 1} align="center">
+              Top particles
+            </td>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    </Draggable>
   );
 };
 
