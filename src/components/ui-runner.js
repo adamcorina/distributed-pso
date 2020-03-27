@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import FunctionPlotter3D from "./plotters/plot3D";
 import FunctionPlotter2D from "./plotters/plot2D";
 import TopParticles from "./top-particles/topParticles";
-import Controls, { PLAY_STATE } from "./controls/controls";
+import Controls from "./controls/controls";
 
 import "./ui-runner.css";
+
+const PLAY_STATE = {
+  RESUME: "Resume",
+  PAUSE: "Pause"
+};
 
 export function CanvasPlotter({ population, ff, iteration }) {
   return ff.dimensions.length === 2 ? (
@@ -23,12 +28,15 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
     { type: "table", key: "canvas" + timestamp }
   ]);
   const [intervalRef, setIntervalRef] = useState(null);
+  const [playState, setPlayState] = useState(PLAY_STATE.PAUSE);
 
-  const onClickPauseCallback = playState => {
+  const onClickPauseCallback = () => {
     if (playState === PLAY_STATE.PAUSE) {
       clearInterval(intervalRef);
+      setPlayState(PLAY_STATE.RESUME);
     } else {
       run();
+      setPlayState(PLAY_STATE.PAUSE);
     }
   };
 
@@ -37,6 +45,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
   };
 
   const resetUI = () => {
+    setPlayState(PLAY_STATE.PAUSE);
     const timestamp = Date.now();
     setPlotters([
       { type: "canvas", key: "canvas" + timestamp },
@@ -86,7 +95,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
           );
         }
       })}
-      <Controls pause={onClickPauseCallback} start={onClickStartCallback} />
+      <Controls pause={onClickPauseCallback} start={onClickStartCallback} playState={playState} />
     </div>
   );
 }
