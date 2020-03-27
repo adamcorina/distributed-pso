@@ -4,8 +4,7 @@ import { random } from "../../../utils/utils";
 
 export default class GA {
   constructor(fitnessFunction, options) {
-    const numSelection = 2 * Math.round(population.individuals.length / 50);
-
+    const numSelection = 2 * Math.ceil(options.populationSize / 50);
     this.dimensions = fitnessFunction.dimensions;
 
     this.selection = new selectionFunctionMappings[

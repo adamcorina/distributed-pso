@@ -2,17 +2,39 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 180px;
-  background-color: #8d8c8c;
+  width: 350px;
+  background-color: #8d8c8cb2;
   border-radius: 4px;
+  border-collapse: collapse;
 }
 
 .controls .btn {
-  margin: 10px;
-  height: 30px;
+  margin: 5px 10px;
+  height: 26px;
   background-color: white;
   text-align: center;
-  line-height: 30px;
+  line-height: 26px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.controls .subtitle {
+  padding-left: 10px;
+  text-transform: uppercase;
+}
+
+.controls .Dropdown-root {
+  margin-right: 10px;
+}
+
+.controls .Dropdown-root .Dropdown-control {
+  border-radius: 4px;
+}
+
+.controls tr:first-of-type div {
+  margin-top: 10px;
+}
+
+.controls tr:last-of-type div {
+  margin-bottom: 10px;
 }

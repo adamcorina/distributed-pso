@@ -44,6 +44,10 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
     runner.resetRunner();
   };
 
+  const onChangeAlgorithmCallback = algorithmTag => {
+    runner.changeSpecifications({ algorithmTag });
+  };
+
   const resetUI = () => {
     setPlayState(PLAY_STATE.PAUSE);
     const timestamp = Date.now();
@@ -95,7 +99,13 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
           );
         }
       })}
-      <Controls pause={onClickPauseCallback} start={onClickStartCallback} playState={playState} />
+      <Controls
+        pause={onClickPauseCallback}
+        start={onClickStartCallback}
+        changeAlgorithm={onChangeAlgorithmCallback}
+        playState={playState}
+        algorithmTag={runner.options.algorithmTag}
+      />
     </div>
   );
 }
