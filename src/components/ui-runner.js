@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FunctionPlotter3D from "./plotters/plot3D";
 import FunctionPlotter2D from "./plotters/plot2D";
 import TopParticles from "./top-particles/topParticles";
-import Controls from "./controls/controls";
+import Controls, { PLAY_STATE } from "./controls/controls";
 
 import "./ui-runner.css";
 
@@ -24,8 +24,12 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
   ]);
   const [intervalRef, setIntervalRef] = useState(null);
 
-  const onClickStopCallback = () => {
-    clearInterval(intervalRef);
+  const onClickPauseCallback = playState => {
+    if (playState === PLAY_STATE.PAUSE) {
+      clearInterval(intervalRef);
+    } else {
+      run();
+    }
   };
 
   const onClickStartCallback = () => {
@@ -82,7 +86,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
           );
         }
       })}
-      <Controls stop={onClickStopCallback} start={onClickStartCallback} />
+      <Controls pause={onClickPauseCallback} start={onClickStartCallback} />
     </div>
   );
 }
