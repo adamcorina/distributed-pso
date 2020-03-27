@@ -39,7 +39,7 @@ export default class Runner {
     );
     this.population = new Population(this.options.populationSize, this.ff);
     this.algorithm.setPopulation(this.population);
-    this.collaboration.initializeAlgorithm();
+    this.collaboration.collaborativeBest = this.algorithm.bestPosition;
 
     this.onSpecificationChangesCallbacks.forEach(callback => {
       callback();
@@ -52,7 +52,6 @@ export default class Runner {
 
   startRunner() {
     this.collaboration.initialize();
-    this.collaboration.initializeAlgorithm();
   }
 
   tick() {

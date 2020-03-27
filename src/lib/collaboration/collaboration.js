@@ -39,16 +39,6 @@ export default class Collaboration {
     this.gun.get("optimization").put({ algorithm: algorithmTag });
   }
 
-  initializeAlgorithm() {
-    this.gun
-      .get("global-minimum")
-      .get("position")
-      .once(position => {
-        let { _, ...coordinates } = position;
-        this.collaborativeBest = Object.values(coordinates);
-      });
-  }
-
   render(algorithm) {
     const bestToIntroduce = [...this.collaborativeBest];
     if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
