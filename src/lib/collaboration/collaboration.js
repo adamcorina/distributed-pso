@@ -89,12 +89,26 @@ export default class Collaboration {
     if (!this.collaborativeBest) {
       return;
     }
-    const bestToIntroduce = [...this.collaborativeBest];
-    if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
-      algorithm.population.replaceWorstParticle(bestToIntroduce);
+    const bestToIntroduceCoordinates = [...this.collaborativeBest];
+    const bestToIntroduce = bestToIntroduceCoordinates.pop();
+
+    if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce) {
+      if (
+        algorithm.population.ff.compute(...bestToIntroduceCoordinates) ===
+        bestToIntroduce
+      ) {
+        algorithm.population.replaceWorstParticle([
+          ...bestToIntroduceCoordinates,
+          bestToIntroduce
+        ]);
+      } else {
+        this.gun.get("global-minimum").put({
+          position: Object.assign({}, [...algorithm.bestPosition])
+        });
+      }
     } else {
       if (
-        numberRounding(bestToIntroduce.slice(-1)[0], 5) >
+        numberRounding(bestToIntroduce, 5) >
         numberRounding(algorithm.bestPosition.slice(-1)[0], 5)
       ) {
         this.gun.get("global-minimum").put({
