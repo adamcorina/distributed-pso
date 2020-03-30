@@ -54,6 +54,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
   };
 
   const resetUI = () => {
+    setIterations(0);
     setPlayState(PLAY_STATE.PAUSE);
     const timestamp = Date.now();
     setPlotters([
@@ -113,7 +114,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
         algorithmTag={runner.options.algorithmTag}
         functionTag={runner.options.functionTag}
       />
-      <Status iterations={iterations}/>
+      <Status iterations={iterations} />
     </div>
   );
 }
