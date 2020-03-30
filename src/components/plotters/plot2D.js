@@ -100,7 +100,7 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
     new OrbitControls(camera, renderer.domElement);
 
     const graphGeometry = createGraphGeometry(segments);
-    plotGraphMesh(scene, graphGeometry);
+    const graphMesh = plotGraphMesh(scene, graphGeometry);
 
     zoomToFitObject(camera, graphGeometry);
 
@@ -150,8 +150,10 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
       mount.current.removeChild(renderer.domElement);
 
       scene.remove(graphMesh);
-      geometry.dispose();
-      material.dispose();
+      
+      population.individuals.forEach(particle => {
+        scene.remove(particle.domMeshReference);
+      });
     };
   }, []);
 
