@@ -10,13 +10,17 @@
 }
 
 .controls .btn {
-  margin: 5px 10px;
+  margin: 0 10px;
   height: 36px;
   background-color: white;
   text-align: center;
   line-height: 36px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.controls td {
+  padding: 5px 0;
 }
 
 .controls .subtitle {

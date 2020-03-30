@@ -1,6 +1,6 @@
 import React from "react";
 import Dropdown from "react-dropdown";
-import Draggable from 'react-draggable';
+import Draggable from "react-draggable";
 import "react-dropdown/style.css";
 
 import { ALGORITHMS, FUNCTIONS } from "../../lib/utils/constants";

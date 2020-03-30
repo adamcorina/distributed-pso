@@ -3,6 +3,7 @@ import FunctionPlotter3D from "./plotters/plot3D";
 import FunctionPlotter2D from "./plotters/plot2D";
 import TopParticles from "./top-particles/topParticles";
 import Controls from "./controls/controls";
+import Status from "./status/status";
 
 import "./ui-runner.css";
 
@@ -22,7 +23,7 @@ export function CanvasPlotter({ population, ff, iteration }) {
 export default function UIRunner({ runner, updateInterval = 150 }) {
   const timestamp = Date.now();
   let interval = null;
-  const [seconds, setSeconds] = useState(0);
+  const [iterations, setIterations] = useState(0);
   const [plotters, setPlotters] = useState([
     { type: "canvas", key: "canvas" + timestamp },
     { type: "table", key: "canvas" + timestamp }
@@ -68,7 +69,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
 
     interval = setInterval(() => {
       runner.tick();
-      setSeconds(seconds => seconds + 1);
+      setIterations(iterations => iterations + 1);
     }, updateInterval);
     setIntervalRef(interval);
   };
@@ -76,7 +77,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
   useEffect(() => {
     runner.registerSpecificationChangesCallback(resetUI);
     runner.startRunner();
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalRef);
   }, []);
 
   return (
@@ -88,7 +89,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
               key={plotter.key}
               population={runner.population}
               ff={runner.ff}
-              iteration={seconds}
+              iteration={iterations}
             />
           );
         }
@@ -98,7 +99,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
               key={plotter.key}
               population={runner.population}
               ff={runner.ff}
-              iteration={seconds}
+              iteration={iterations}
             />
           );
         }
@@ -112,6 +113,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
         algorithmTag={runner.options.algorithmTag}
         functionTag={runner.options.functionTag}
       />
+      <Status iterations={iterations}/>
     </div>
   );
 }
