@@ -5,11 +5,12 @@ require("gun/sea");
 import { numberRounding } from "../utils/utils";
 
 export default class Collaboration {
-  constructor(algorithmTag, functionTag, onChangesCallback) {
+  constructor(algorithmTag, functionTag, populationSize, onChangesCallback) {
     this.collaborativeBest = null;
     this.gun = Gun(location.origin + "/gun");
     this.algorithmTag = algorithmTag;
-    this.functionTag = functionTag
+    this.functionTag = functionTag;
+    this.populationSize = populationSize;
     this.onChangesCallback = onChangesCallback;
   }
 
@@ -31,16 +32,27 @@ export default class Collaboration {
       this.gun
         .get("optimization")
         .get("algorithm")
-        .once((algorithm) => {
+        .once(algorithm => {
           this.algorithmTag = algorithm;
         });
-        this.gun
+      this.gun
         .get("optimization")
         .get("ff")
-        .once((ff) => {
+        .once(ff => {
           this.functionTag = ff;
         });
-        this.onChangesCallback({ algorithmTag: this.algorithmTag, functionTag: this.functionTag });
+      this.gun
+        .get("optimization")
+        .get("populationSize")
+        .once(populationSize => {
+          this.populationSize = populationSize;
+        });
+
+      this.onChangesCallback({
+        algorithmTag: this.algorithmTag,
+        functionTag: this.functionTag,
+        populationSize: this.populationSize
+      });
     });
   }
 
@@ -66,6 +78,11 @@ export default class Collaboration {
         Number.MAX_VALUE
       ])
     });
+  }
+
+  changePopulationSize(populationSize) {
+    this.populationSize = populationSize;
+    this.gun.get("optimization").put({ populationSize: populationSize });
   }
 
   render(algorithm) {

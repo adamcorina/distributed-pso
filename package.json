@@ -24,6 +24,7 @@
     "react-draggable": "^4.2.0",
     "react-dropdown": "^1.7.0",
     "react-hot-loader": "^4.12.16",
+    "react-numeric-input": "^2.2.3",
     "three": "^0.114.0",
     "three-orbit-controls": "^82.1.0",
     "webpack": "^4.42.0"

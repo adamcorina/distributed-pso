@@ -212,10 +212,12 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
 
   useEffect(() => {
     const updateParticle = function(mesh, coordinates, color) {
-      mesh.position.x = coordinates[0];
-      mesh.position.y = coordinates[1];
-      mesh.position.z = coordinates[2];
-      color && mesh.material.color.setHex(color);
+      if (mesh) {
+        mesh.position.x = coordinates[0];
+        mesh.position.y = coordinates[1];
+        mesh.position.z = coordinates[2];
+        color && mesh.material.color.setHex(color);
+      }
     };
 
     for (let i = 0; i < population.individuals.length; i++) {

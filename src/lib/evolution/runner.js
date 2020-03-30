@@ -21,6 +21,7 @@ export default class Runner {
     this.collaboration = new Collaboration(
       algorithmTag,
       functionTag,
+      this.options.populationSize,
       this.onSpecificationChanges.bind(this)
     );
   }
@@ -30,17 +31,21 @@ export default class Runner {
   }
 
   changeSpecifications(options) {
-    if(options.algorithmTag){
+    if (options.algorithmTag) {
       this.collaboration.changeAlgorithm(options.algorithmTag);
     }
-    if(options.functionTag){
+    if (options.functionTag) {
       this.collaboration.changeFunction(options.functionTag);
+    }
+    if (options.populationSize) {
+      this.collaboration.changePopulationSize(options.populationSize);
     }
   }
 
   onSpecificationChanges(options) {
     this.options.algorithmTag = options.algorithmTag;
     this.options.functionTag = options.functionTag;
+    this.options.populationSize = options.populationSize;
     this.ff = new functionMap[this.options.functionTag]();
     this.population = new Population(this.options.populationSize, this.ff);
     this.algorithm = new algorithmMap[this.options.algorithmTag](

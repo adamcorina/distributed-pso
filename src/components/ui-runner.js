@@ -20,7 +20,7 @@ export function CanvasPlotter({ population, ff, iteration }) {
   );
 }
 
-export default function UIRunner({ runner, updateInterval = 150 }) {
+export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
   const timestamp = Date.now();
   let interval = null;
   const [iterations, setIterations] = useState(0);
@@ -30,6 +30,7 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
   ]);
   const [intervalRef, setIntervalRef] = useState(null);
   const [playState, setPlayState] = useState(PLAY_STATE.PAUSE);
+  const [updateInterval, setUpdateInterval] = useState(initialUpdateInterval);
 
   const onClickPauseCallback = () => {
     if (playState === PLAY_STATE.PAUSE) {
@@ -53,9 +54,21 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
     runner.changeSpecifications({ functionTag });
   };
 
+  const onChangeUpdateIntervalCallback = intervalValue => {
+    setUpdateInterval(intervalValue);
+    if (playState === PLAY_STATE.PAUSE) {
+      run(intervalValue);
+    }
+  };
+
+  const onChangePopulationSize = populationSize => {
+    runner.changeSpecifications({ populationSize });
+  };
+
   const resetUI = () => {
     setIterations(0);
     setPlayState(PLAY_STATE.PAUSE);
+    setUpdateInterval(initialUpdateInterval);
     const timestamp = Date.now();
     setPlotters([
       { type: "canvas", key: "canvas" + timestamp },
@@ -65,20 +78,21 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
     run();
   };
 
-  const run = () => {
+  const run = time => {
     clearInterval(interval);
+    clearInterval(intervalRef);
 
     interval = setInterval(() => {
       runner.tick();
       setIterations(iterations => iterations + 1);
-    }, updateInterval);
+    }, time || updateInterval);
     setIntervalRef(interval);
   };
 
   useEffect(() => {
     runner.registerSpecificationChangesCallback(resetUI);
     runner.startRunner();
-    return () => clearInterval(intervalRef);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -110,9 +124,13 @@ export default function UIRunner({ runner, updateInterval = 150 }) {
         start={onClickStartCallback}
         changeAlgorithm={onChangeAlgorithmCallback}
         changeFunction={onChangeFunctionCallback}
+        changeUpdateInterval={onChangeUpdateIntervalCallback}
+        changePopulationSize={onChangePopulationSize}
         playState={playState}
         algorithmTag={runner.options.algorithmTag}
         functionTag={runner.options.functionTag}
+        updateInterval={updateInterval}
+        populationSize={runner.options.populationSize}
       />
       <Status iterations={iterations} />
     </div>

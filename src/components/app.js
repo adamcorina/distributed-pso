@@ -25,7 +25,7 @@ const App = () => {
   return (
     <div className="app-container">
       {runners.map((runner, index) => (
-        <UIRunner runner={runner} key={index} updateInterval={90} />
+        <UIRunner runner={runner} key={index} initialUpdateInterval={90} />
       ))}
     </div>
   );

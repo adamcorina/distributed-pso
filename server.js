@@ -23,7 +23,8 @@ const gun = Gun({ file: "db/data", web: server });
 gun.get("optimization").not(key => {
   gun.get(key).put({
     algorithm: ALGORITHMS.PSO,
-    ff: FUNCTIONS.FF_SCHWEFEL
+    ff: FUNCTIONS.FF_SCHWEFEL,
+    populationSize: 50
   });
 });
 

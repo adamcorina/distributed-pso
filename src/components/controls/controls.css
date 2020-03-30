@@ -19,6 +19,11 @@
   cursor: pointer;
 }
 
+.controls .btn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 .controls td {
   padding: 5px 0;
 }
@@ -47,4 +52,39 @@
 
 .controls tr:last-of-type div {
   margin-bottom: 10px;
+}
+
+.controls .speed-controls {
+  display: flex;
+  flex-direction: row;
+}
+
+.controls .speed-controls .btn {
+  flex: 1;
+}
+
+.controls .speed-controls .value {
+  width: 85px;
+  line-height: 36px;
+  text-align: center;
+}
+
+.controls .population-controls {
+  display: flex;
+  flex-direction: row;
+}
+
+.controls .population-controls .react-numeric-input {
+  height: 36px;
+}
+
+.controls .population-controls .react-numeric-input input {
+  height: 100%;
+  width: 100%;
+  border-radius: 4px !important;
+}
+
+.controls .population-controls .react-numeric-input, .controls .population-controls .btn {
+  flex: 1 1 50%;
+  width: 50%;
 }
