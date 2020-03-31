@@ -65,6 +65,10 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
     runner.changeSpecifications({ populationSize });
   };
 
+  const onLocallyChangeAlgorithmCallback = algorithmTag => {
+    runner.locallyChangeSpecifications({ algorithmTag });
+  }
+
   const resetUI = () => {
     setIterations(0);
     setPlayState(PLAY_STATE.PAUSE);
@@ -126,11 +130,13 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
         changeFunction={onChangeFunctionCallback}
         changeUpdateInterval={onChangeUpdateIntervalCallback}
         changePopulationSize={onChangePopulationSize}
+        locallyChangeAlgorithm={onLocallyChangeAlgorithmCallback}
         playState={playState}
         algorithmTag={runner.options.algorithmTag}
         functionTag={runner.options.functionTag}
         updateInterval={updateInterval}
         populationSize={runner.options.populationSize}
+        localAlgorithmTag={runner.options.localAlgorithmTag}
       />
       <Status iterations={iterations} />
     </div>

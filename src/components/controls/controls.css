@@ -46,11 +46,11 @@
   cursor: pointer;
 }
 
-.controls tr:first-of-type div {
+.controls tr:first-of-type td > div {
   margin-top: 10px;
 }
 
-.controls tr:last-of-type div {
+.controls tr:last-of-type td > div {
   margin-bottom: 10px;
 }
 

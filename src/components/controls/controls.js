@@ -17,11 +17,13 @@ const Controls = ({
   changeFunction,
   changeUpdateInterval,
   changePopulationSize,
+  locallyChangeAlgorithm,
   playState,
   algorithmTag,
   functionTag,
   updateInterval,
-  populationSize
+  populationSize,
+  localAlgorithmTag
 }) => {
   const [localPopulationSize, updateLocalPopulationSize] = useState(
     populationSize
@@ -155,6 +157,20 @@ const Controls = ({
             >
               faster
             </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="1">
+            <div className="description">Algorithm:</div>
+          </td>
+          <td colspan="2">
+            <Dropdown
+              options={Object.values(ALGORITHMS)}
+              value={localAlgorithmTag}
+              onChange={e => {
+                locallyChangeAlgorithm(e.value);
+              }}
+            />
           </td>
         </tr>
       </table>
