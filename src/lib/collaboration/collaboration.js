@@ -59,18 +59,21 @@ export default class Collaboration {
   changeFunction(functionTag) {
     this.functionTag = functionTag;
     this.gun.get("optimization").put({ ff: functionTag });
-    this.gun.get("global-minimum").put({
-      position: Object.assign({}, [
-        Number.MAX_VALUE,
-        Number.MAX_VALUE,
-        Number.MAX_VALUE
-      ])
-    });
+    this.resetGlobalBest();
   }
 
   changeAlgorithm(algorithmTag) {
     this.algorithmTag = algorithmTag;
     this.gun.get("optimization").put({ algorithm: algorithmTag });
+    this.resetGlobalBest();
+  }
+
+  changePopulationSize(populationSize) {
+    this.populationSize = populationSize;
+    this.gun.get("optimization").put({ populationSize: populationSize });
+  }
+
+  resetGlobalBest() {
     this.gun.get("global-minimum").put({
       position: Object.assign({}, [
         Number.MAX_VALUE,
@@ -78,11 +81,6 @@ export default class Collaboration {
         Number.MAX_VALUE
       ])
     });
-  }
-
-  changePopulationSize(populationSize) {
-    this.populationSize = populationSize;
-    this.gun.get("optimization").put({ populationSize: populationSize });
   }
 
   render(algorithm) {

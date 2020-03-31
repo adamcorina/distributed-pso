@@ -9,7 +9,8 @@ export default class Runner {
       populationSize: 2,
       algorithmTag: algorithmTag,
       localAlgorithmTag: algorithmTag,
-      functionTag: functionTag
+      functionTag: functionTag,
+      isCollaborative: true
     };
     Object.assign(this.options, options);
 
@@ -19,12 +20,15 @@ export default class Runner {
     this.population = new Population(this.options.populationSize, this.ff);
     this.algorithm = new algorithmMap[algorithmTag](this.ff, this.options);
     this.algorithm.setPopulation(this.population);
-    this.collaboration = new Collaboration(
-      algorithmTag,
-      functionTag,
-      this.options.populationSize,
-      this.onSpecificationChanges.bind(this)
-    );
+
+    if (this.options.isCollaborative) {
+      this.collaboration = new Collaboration(
+        algorithmTag,
+        functionTag,
+        this.options.populationSize,
+        this.onSpecificationChanges.bind(this)
+      );
+    }
   }
 
   registerSpecificationChangesCallback(callback) {
@@ -32,14 +36,16 @@ export default class Runner {
   }
 
   changeSpecifications(options) {
-    if (options.algorithmTag) {
-      this.collaboration.changeAlgorithm(options.algorithmTag);
-    }
-    if (options.functionTag) {
-      this.collaboration.changeFunction(options.functionTag);
-    }
-    if (options.populationSize) {
-      this.collaboration.changePopulationSize(options.populationSize);
+    if (this.options.isCollaborative) {
+      if (options.algorithmTag) {
+        this.collaboration.changeAlgorithm(options.algorithmTag);
+      }
+      if (options.functionTag) {
+        this.collaboration.changeFunction(options.functionTag);
+      }
+      if (options.populationSize) {
+        this.collaboration.changePopulationSize(options.populationSize);
+      }
     }
   }
 
@@ -82,11 +88,15 @@ export default class Runner {
   }
 
   startRunner() {
-    this.collaboration.initialize();
+    if (this.options.isCollaborative) {
+      this.collaboration.initialize();
+    }
   }
 
   tick() {
     this.algorithm.iterate();
-    this.collaboration.render(this.algorithm);
+    if (this.options.isCollaborative) {
+      this.collaboration.render(this.algorithm);
+    }
   }
 }

@@ -4,6 +4,7 @@ class FF_Sphere {
       { min: -5, max: 5 },
       { min: -5, max: 5 }
     ];
+    this.actualMinimum = [0, 0, 0];
   }
 
   compute(x = 0, y = 0) {
@@ -18,6 +19,7 @@ class FF_Rastrigin {
       { min: -5, max: 5 },
       { min: -5, max: 5 }
     ];
+    this.actualMinimum = [0, 0, 0];
   }
 
   compute(x = 0, y = 0) {
@@ -36,6 +38,7 @@ class FF_Schwefel {
       { min: -500, max: 500 },
       { min: -500, max: 500 }
     ];
+    this.actualMinimum = [420.9687, 420.9687, 83.79658];
   }
 
   compute(x = 0, y = 0) {
@@ -50,6 +53,7 @@ class FF_Schwefel {
 class FF_2D {
   constructor() {
     this.dimensions = [{ min: 0, max: 2 }];
+    this.actualMinimum = [1.8783, -1.8636];
   }
 
   compute(x = 0) {

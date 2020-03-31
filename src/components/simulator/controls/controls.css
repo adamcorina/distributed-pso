@@ -61,6 +61,7 @@
 
 .controls .speed-controls .btn {
   flex: 1;
+  margin-left: 0;
 }
 
 .controls .speed-controls .value {

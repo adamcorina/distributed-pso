@@ -4,7 +4,7 @@ import Draggable from "react-draggable";
 import "react-dropdown/style.css";
 import NumericInput from "react-numeric-input";
 
-import { ALGORITHMS, FUNCTIONS } from "../../lib/utils/constants";
+import { ALGORITHMS, FUNCTIONS } from "../../../lib/utils/constants";
 
 import "./controls.css";
 

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Runner from "../lib/evolution/runner";
-import "./app.css";
+import Runner from "../../lib/evolution/runner";
 import UIRunner from "./ui-runner";
-const ALGORITHMS = require("../lib/utils/constants").ALGORITHMS;
-const FUNCTIONS = require("../lib/utils/constants").FUNCTIONS;
-const SELECTION_FUNCTIONS = require("../lib/utils/constants").SELECTION_FUNCTIONS;
 
-const App = () => {
+const ALGORITHMS = require("../../lib/utils/constants").ALGORITHMS;
+const FUNCTIONS = require("../../lib/utils/constants").FUNCTIONS;
+const SELECTION_FUNCTIONS = require("../../lib/utils/constants")
+  .SELECTION_FUNCTIONS;
+
+import "./simulator.css";
+
+const Simulator = () => {
   const [runners, setRunners] = useState([]);
 
   useEffect(() => {
@@ -30,4 +33,4 @@ const App = () => {
     </div>
   );
 };
-export default App;
+export default Simulator;

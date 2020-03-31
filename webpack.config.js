@@ -7,7 +7,8 @@ const config = {
   entry: ["./src/index.js"],
   output: {
     path: path.resolve(__dirname, "public"),
-    filename: "bundle.js"
+    filename: "bundle.js",
+    publicPath: "/"
   },
   module: {
     rules: [
@@ -35,13 +36,7 @@ const config = {
       "react-dom": "@hot-loader/react-dom"
     }
   },
-  devServer: {
-    contentBase: "./public",
-    host: "127.0.0.1",
-    port: "8080",
-    headers: { "Access-Control-Allow-Origin": "*" }
-  },
-  devtool: '#eval-source-map'
+  devtool: "#eval-source-map"
 };
 
 module.exports = config;
