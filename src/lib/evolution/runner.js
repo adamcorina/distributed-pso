@@ -60,22 +60,17 @@ export default class Runner {
   }
 
   onSpecificationChanges(options) {
-    if (this.options.populationSize !== options.populationSize) {
-      this.options.populationSize = options.populationSize;
-      this.population = new Population(this.options.populationSize, this.ff);
-      this.algorithm.setPopulation(this.population);
-    } else {
-      this.options.algorithmTag = options.algorithmTag;
-      this.options.localAlgorithmTag = options.algorithmTag;
-      this.options.functionTag = options.functionTag;
-      this.ff = new functionMap[this.options.functionTag]();
-      this.population = new Population(this.options.populationSize, this.ff);
-      this.algorithm = new algorithmMap[this.options.algorithmTag](
-        this.ff,
-        this.options
-      );
-      this.algorithm.setPopulation(this.population);
-    }
+    this.options.algorithmTag = options.algorithmTag;
+    this.options.localAlgorithmTag = options.algorithmTag;
+    this.options.functionTag = options.functionTag;
+    this.options.populationSize = options.populationSize;
+    this.ff = new functionMap[this.options.functionTag]();
+    this.population = new Population(this.options.populationSize, this.ff);
+    this.algorithm = new algorithmMap[this.options.algorithmTag](
+      this.ff,
+      this.options
+    );
+    this.algorithm.setPopulation(this.population);
 
     this.onSpecificationChangesCallbacks.forEach(callback => {
       callback();
