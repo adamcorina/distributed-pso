@@ -41,6 +41,8 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
 
     const line = new THREE.Line(graphGeometry, material);
     scene.add(line);
+
+    return line;
   }
 
   const zoomToFitObject = (camera, graphGeometry) => {
@@ -147,13 +149,19 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
     return () => {
       stop();
       window.removeEventListener("resize", handleResize);
-      mount.current.removeChild(renderer.domElement);
 
+      graphMesh.material.dispose();
+      graphMesh.geometry.dispose();
       scene.remove(graphMesh);
       
       population.individuals.forEach(particle => {
+        particle.domMeshReference.material.dispose();
+        particle.domMeshReference.geometry.dispose();
         scene.remove(particle.domMeshReference);
       });
+
+      renderer.renderLists.dispose();
+      mount.current.removeChild(renderer.domElement);
     };
   }, []);
 

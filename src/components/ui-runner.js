@@ -26,7 +26,7 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
   const [iterations, setIterations] = useState(0);
   const [plotters, setPlotters] = useState([
     { type: "canvas", key: "canvas" + timestamp },
-    { type: "table", key: "canvas" + timestamp }
+    { type: "table", key: "table" + timestamp }
   ]);
   const [intervalRef, setIntervalRef] = useState(null);
   const [playState, setPlayState] = useState(PLAY_STATE.PAUSE);
@@ -76,7 +76,7 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
     const timestamp = Date.now();
     setPlotters([
       { type: "canvas", key: "canvas" + timestamp },
-      { type: "table", key: "canvas" + timestamp }
+      { type: "table", key: "table" + timestamp }
     ]);
 
     run();

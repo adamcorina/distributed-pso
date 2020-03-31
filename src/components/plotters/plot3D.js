@@ -196,13 +196,19 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
     return () => {
       stop();
       window.removeEventListener("resize", handleResize);
-      mount.current.removeChild(renderer.domElement);
 
+      graphMesh.material.dispose();
+      graphMesh.geometry.dispose();
       scene.remove(graphMesh);
 
       population.individuals.forEach(particle => {
+        particle.domMeshReference.material.dispose();
+        particle.domMeshReference.geometry.dispose();
         scene.remove(particle.domMeshReference);
       });
+
+      renderer.renderLists.dispose();
+      mount.current.removeChild(renderer.domElement);
     };
   };
 
