@@ -1,7 +1,8 @@
 const algorithmMap = require("./algorithms/algorithms");
 const functionMap = require("./optimisation-functions/functions");
-import Collaboration from "../collaboration/collaboration";
+import DistributedCollaboration from "../collaboration/distributedCollaboration";
 import Population from "./algorithms/population";
+import Collaboration from "../collaboration/collaboration";
 
 export default class Runner {
   constructor(algorithmTag, functionTag, options) {
@@ -10,7 +11,7 @@ export default class Runner {
       algorithmTag: algorithmTag,
       localAlgorithmTag: algorithmTag,
       functionTag: functionTag,
-      isCollaborative: true
+      reportBest: true
     };
     Object.assign(this.options, options);
 
@@ -21,13 +22,15 @@ export default class Runner {
     this.algorithm = new algorithmMap[algorithmTag](this.ff, this.options);
     this.algorithm.setPopulation(this.population);
 
-    if (this.options.isCollaborative) {
-      this.collaboration = new Collaboration(
+    if (this.options.reportBest) {
+      this.collaboration = new DistributedCollaboration(
         algorithmTag,
         functionTag,
         this.options.populationSize,
         this.onSpecificationChanges.bind(this)
       );
+    } else {
+      this.collaboration = new Collaboration();
     }
   }
 
@@ -36,7 +39,7 @@ export default class Runner {
   }
 
   changeSpecifications(options) {
-    if (this.options.isCollaborative) {
+    if (this.options.reportBest) {
       if (options.algorithmTag) {
         this.collaboration.changeAlgorithm(options.algorithmTag);
       }
@@ -88,15 +91,13 @@ export default class Runner {
   }
 
   startRunner() {
-    if (this.options.isCollaborative) {
+    if (this.options.reportBest) {
       this.collaboration.initialize();
     }
   }
 
   tick() {
     this.algorithm.iterate();
-    if (this.options.isCollaborative) {
-      this.collaboration.render(this.algorithm);
-    }
+    this.collaboration.render(this.algorithm);
   }
 }

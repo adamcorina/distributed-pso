@@ -12,7 +12,7 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
     return Math.max(size.x, size.y, size.z);
   };
 
-  const createGraphGeometry = (segments) => {
+  const createGraphGeometry = segments => {
     const xMin = ff.dimensions[0].min;
     const xMax = ff.dimensions[0].max;
 
@@ -34,7 +34,7 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
     graphGeometry.computeBoundingBox();
 
     return graphGeometry;
-  }
+  };
 
   const plotGraphMesh = (scene, graphGeometry) => {
     var material = new THREE.LineBasicMaterial({ color: 0x000000 });
@@ -43,7 +43,7 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
     scene.add(line);
 
     return line;
-  }
+  };
 
   const zoomToFitObject = (camera, graphGeometry) => {
     const maxDim = getMaxSizeBoundingBox(graphGeometry);
@@ -60,7 +60,7 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
 
     const center = graphGeometry.boundingBox.getCenter();
     camera.lookAt(center);
-  }
+  };
 
   const addParticles = (scene, graphGeometry) => {
     const maxDim = getMaxSizeBoundingBox(graphGeometry);
@@ -73,7 +73,7 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
       particle.domMeshReference = mesh;
       scene.add(mesh);
     });
-  }
+  };
 
   useEffect(() => {
     const width = mount.current.clientWidth;
@@ -107,12 +107,14 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
     zoomToFitObject(camera, graphGeometry);
 
     // add axes
-    const axesHelper = new THREE.AxesHelper(getMaxSizeBoundingBox(graphGeometry));
+    const axesHelper = new THREE.AxesHelper(
+      getMaxSizeBoundingBox(graphGeometry)
+    );
 
     var colors = axesHelper.geometry.attributes.color;
     colors.setXYZ(1, 165, 165, 165);
     colors.setXYZ(3, 165, 165, 165);
-    
+
     scene.add(axesHelper);
 
     addParticles(scene, graphGeometry);
@@ -153,7 +155,7 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
       graphMesh.material.dispose();
       graphMesh.geometry.dispose();
       scene.remove(graphMesh);
-      
+
       population.individuals.forEach(particle => {
         particle.domMeshReference.material.dispose();
         particle.domMeshReference.geometry.dispose();
@@ -167,9 +169,11 @@ export default function FunctionPlotter2D({ population, ff, iteration }) {
 
   useEffect(() => {
     const updateParticle = function(mesh, coordinates, color) {
-      mesh.position.x = coordinates[0];
-      mesh.position.y = coordinates[1];
-      color && mesh.material.color.setHex(color);
+      if (mesh) {
+        mesh.position.x = coordinates[0];
+        mesh.position.y = coordinates[1];
+        color && mesh.material.color.setHex(color);
+      }
     };
 
     for (let i = 0; i < population.individuals.length; i++) {
