@@ -14,14 +14,14 @@ import {
   SELECTION_FUNCTIONS
 } from "../../../lib/utils/constants";
 
-const ITERATIONS = 100;
+const ITERATIONS = 300;
 const POPULATION_SIZE = 5;
 
 const ClosenessChart = () => {
   const [resultsSingleNode, setResultsSingleNode] = useState([]);
   const [resultsMultipleNodes, setResultsMultipleNodes] = useState([]);
-  const [iterationNumber, setIterationNumber] = useState(ITERATIONS);
-  const [populationSize, setPopulationSize] = useState(POPULATION_SIZE);
+  const [iterationNumber, setIterationNumber] = useState(0);
+  const [populationSize, setPopulationSize] = useState(0);
 
   const testSingeNode = () => {
     const results = [];
@@ -110,8 +110,8 @@ const ClosenessChart = () => {
   );
 
   useEffect(() => {
-    setResultsSingleNode(testSingeNode());
-    setResultsMultipleNodes(testMultipleNodes());
+    setIterationNumber(ITERATIONS);
+    setPopulationSize(POPULATION_SIZE);
   }, []);
 
   useEffect(() => {

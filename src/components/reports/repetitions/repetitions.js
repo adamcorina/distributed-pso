@@ -21,9 +21,9 @@ const REPETITIONS = 30;
 const RepetitionsChart = () => {
   const [resultsSingleNode, setResultsSingleNode] = useState([]);
   const [resultsMultipleNodes, setResultsMultipleNodes] = useState([]);
-  const [repetitionNumber, setRepetitionNumber] = useState(REPETITIONS);
-  const [iterationNumber, setIterationNumber] = useState(ITERATIONS);
-  const [populationSize, setPopulationSize] = useState(POPULATION_SIZE);
+  const [repetitionNumber, setRepetitionNumber] = useState(0);
+  const [iterationNumber, setIterationNumber] = useState(0);
+  const [populationSize, setPopulationSize] = useState(0);
 
 
   const testSingeNode = () => {
@@ -116,8 +116,9 @@ const RepetitionsChart = () => {
   );
 
   useEffect(() => {
-    setResultsSingleNode(testSingeNode());
-    setResultsMultipleNodes(testMultipleNodes());
+    setIterationNumber(ITERATIONS);
+    setPopulationSize(POPULATION_SIZE);
+    setRepetitionNumber(REPETITIONS);
   }, []);
 
   useEffect(() => {
