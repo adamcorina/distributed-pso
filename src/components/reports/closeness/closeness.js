@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import NumericInput from "react-numeric-input";
+import Dropdown from "react-dropdown";
+import "react-dropdown/style.css";
 
 import Runner from "../../../lib/evolution/runner";
 import { random } from "../../../lib/utils/utils";
@@ -22,13 +24,17 @@ const ClosenessChart = () => {
   const [resultsMultipleNodes, setResultsMultipleNodes] = useState([]);
   const [iterationNumber, setIterationNumber] = useState(0);
   const [populationSize, setPopulationSize] = useState(0);
+  const [algorithm, setAlgorithm] = useState(ALGORITHMS.PSO);
+  const [optimisationFunction, setOptimisationFunction] = useState(
+    FUNCTIONS.FF_SCHWEFEL
+  );
 
   const testSingeNode = () => {
     const results = [];
 
-    const runner = new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
+    const runner = new Runner(algorithm, optimisationFunction, {
       populationSize: populationSize,
-      selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
+      selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
       reportBest: false
     });
 
@@ -52,9 +58,9 @@ const ClosenessChart = () => {
     const results = [];
 
     const runners = [
-      new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
+      new Runner(algorithm, optimisationFunction, {
         populationSize: populationSize,
-        selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
+        selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
         reportBest: false
       })
     ];
@@ -66,9 +72,9 @@ const ClosenessChart = () => {
       const rand = random(0, 1);
       if (rand < 0.05) {
         runners.push(
-          new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
+          new Runner(algorithm, optimisationFunction, {
             populationSize: populationSize,
-            selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
+            selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
             reportBest: false
           })
         );
@@ -109,15 +115,19 @@ const ClosenessChart = () => {
     []
   );
 
+  const recalculate = () => {
+    setResultsSingleNode(testSingeNode());
+    setResultsMultipleNodes(testMultipleNodes());
+  };
+
   useEffect(() => {
     setIterationNumber(ITERATIONS);
     setPopulationSize(POPULATION_SIZE);
   }, []);
 
   useEffect(() => {
-    setResultsSingleNode(testSingeNode());
-    setResultsMultipleNodes(testMultipleNodes());
-  }, [iterationNumber, populationSize]);
+    recalculate();
+  }, [iterationNumber, populationSize, algorithm, optimisationFunction]);
 
   return (
     <div className="closeness-results-container">
@@ -140,6 +150,33 @@ const ClosenessChart = () => {
             value={populationSize}
             onChange={value => setPopulationSize(value)}
           />
+        </div>
+      </div>
+      <div className="report-controls">
+        <div className="algorithm">
+          Algorithm:
+          <Dropdown
+            options={Object.values(ALGORITHMS)}
+            value={algorithm}
+            onChange={e => {
+              setAlgorithm(e.value);
+            }}
+          />
+        </div>
+        <div className="function">
+          Function:
+          <Dropdown
+            options={Object.values(FUNCTIONS)}
+            value={optimisationFunction}
+            onChange={e => {
+              setOptimisationFunction(e.value);
+            }}
+          />
+        </div>
+        <div className="recalculate">
+          <div className="btn" onClick={recalculate}>
+            Recalculate
+          </div>
         </div>
       </div>
       <div className="closeness-results">

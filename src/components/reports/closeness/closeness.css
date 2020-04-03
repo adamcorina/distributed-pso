@@ -1,6 +1,6 @@
 .closeness-results-container {
-  width: calc(94% - 20px);
-  margin: 50px 3%;
+  width: calc(90% - 20px);
+  margin: 50px 5%;
   border: 1px solid #dddddd;
   border-radius: 4px;
   padding: 10px;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Dropdown from "react-dropdown";
 import Draggable from "react-draggable";
+import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import NumericInput from "react-numeric-input";
 
@@ -36,12 +36,12 @@ const Controls = ({
     changePopulationSize(localPopulationSize);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     updateLocalPopulationSize(populationSize);
-  }, [populationSize])
+  }, [populationSize]);
 
   return (
-    <Draggable>
+    <Draggable cancel=".react-numeric-input">
       <table className="controls">
         <tr>
           <td colspan="3">
@@ -93,6 +93,8 @@ const Controls = ({
               max={200}
               value={localPopulationSize}
               onChange={onPopulationChange}
+              onKeyDown={e => e.stopPropagation()}
+              onFocus={e => e.stopPropagation()}
             />
             <div className="btn" onClick={propagatePopulationSizeChange}>
               Update

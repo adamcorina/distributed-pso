@@ -38,7 +38,7 @@ class FF_Schwefel {
       { min: -500, max: 500 },
       { min: -500, max: 500 }
     ];
-    this.actualMinimum = [420.9687, 420.9687, 83.79658];
+    this.actualMinimum = [420.968746, 420.968746, 83.796585];
   }
 
   compute(x = 0, y = 0) {
@@ -53,7 +53,7 @@ class FF_Schwefel {
 class FF_2D {
   constructor() {
     this.dimensions = [{ min: 0, max: 2 }];
-    this.actualMinimum = [1.8783, -1.8636];
+    this.actualMinimum = [1.87836, -1.87668];
   }
 
   compute(x = 0) {

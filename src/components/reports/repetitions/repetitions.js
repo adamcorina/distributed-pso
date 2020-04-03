@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import NumericInput from "react-numeric-input";
+import Dropdown from "react-dropdown";
+import "react-dropdown/style.css";
 
 import Runner from "../../../lib/evolution/runner";
 import { random, numberRounding } from "../../../lib/utils/utils";
@@ -21,17 +23,20 @@ const REPETITIONS = 30;
 const RepetitionsChart = () => {
   const [resultsSingleNode, setResultsSingleNode] = useState([]);
   const [resultsMultipleNodes, setResultsMultipleNodes] = useState([]);
-  const [repetitionNumber, setRepetitionNumber] = useState(0);
-  const [iterationNumber, setIterationNumber] = useState(0);
-  const [populationSize, setPopulationSize] = useState(0);
-
+  const [repetitionNumber, setRepetitionNumber] = useState(REPETITIONS);
+  const [iterationNumber, setIterationNumber] = useState(ITERATIONS);
+  const [populationSize, setPopulationSize] = useState(POPULATION_SIZE);
+  const [algorithm, setAlgorithm] = useState(ALGORITHMS.PSO);
+  const [optimisationFunction, setOptimisationFunction] = useState(
+    FUNCTIONS.FF_RASTRIGIN
+  );
 
   const testSingeNode = () => {
     let counter = 0;
     for (let i = 0; i < repetitionNumber; i++) {
-      const runner = new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
+      const runner = new Runner(algorithm, optimisationFunction, {
         populationSize: populationSize,
-        selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
+        selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
         reportBest: false
       });
 
@@ -56,9 +61,9 @@ const RepetitionsChart = () => {
     let counter = 0;
     for (let i = 0; i < repetitionNumber; i++) {
       const runners = [
-        new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
+        new Runner(algorithm, optimisationFunction, {
           populationSize: populationSize,
-          selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
+          selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
           reportBest: false
         })
       ];
@@ -70,9 +75,9 @@ const RepetitionsChart = () => {
         const rand = random(0, 1);
         if (rand < 0.05) {
           runners.push(
-            new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
+            new Runner(algorithm, optimisationFunction, {
               populationSize: populationSize,
-              selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
+              selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
               reportBest: false
             })
           );
@@ -115,16 +120,24 @@ const RepetitionsChart = () => {
     []
   );
 
+  const recalculate = () => {
+    setResultsSingleNode(testSingeNode());
+    setResultsMultipleNodes(testMultipleNodes());
+  };
+
   useEffect(() => {
-    setIterationNumber(ITERATIONS);
-    setPopulationSize(POPULATION_SIZE);
-    setRepetitionNumber(REPETITIONS);
+    recalculate();
   }, []);
 
   useEffect(() => {
-    setResultsSingleNode(testSingeNode());
-    setResultsMultipleNodes(testMultipleNodes());
-  }, [repetitionNumber, iterationNumber, populationSize]);
+    recalculate();
+  }, [
+    repetitionNumber,
+    iterationNumber,
+    populationSize,
+    algorithm,
+    optimisationFunction
+  ]);
 
   return (
     <div className="repetition-results-container">
@@ -156,6 +169,33 @@ const RepetitionsChart = () => {
             value={populationSize}
             onChange={value => setPopulationSize(value)}
           />
+        </div>
+      </div>
+      <div className="report-controls">
+        <div className="algorithm">
+          Algorithm:
+          <Dropdown
+            options={Object.values(ALGORITHMS)}
+            value={algorithm}
+            onChange={e => {
+              setAlgorithm(e.value);
+            }}
+          />
+        </div>
+        <div className="function">
+          Function:
+          <Dropdown
+            options={Object.values(FUNCTIONS)}
+            value={optimisationFunction}
+            onChange={e => {
+              setOptimisationFunction(e.value);
+            }}
+          />
+        </div>
+        <div className="recalculate">
+          <div className="btn" onClick={recalculate}>
+            Recalculate
+          </div>
         </div>
       </div>
       <div className="repetition-results">

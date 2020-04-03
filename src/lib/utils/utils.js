@@ -12,7 +12,7 @@ const indexOfLargest = function(particles) {
 
 const numberRounding = function(num, digits, base = 10) {
   const pow = Math.pow(base || 10, digits);
-  return Math.round(num * pow) / pow;
+  return Math.ceil(num * pow) / pow;
 };
 
 const random = function(min = 0, max = 1, precision) {
