@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import NumericInput from "react-numeric-input";
 
 import Runner from "../../../lib/evolution/runner";
 import { random, numberRounding } from "../../../lib/utils/utils";
@@ -20,11 +21,16 @@ const REPETITIONS = 30;
 const RepetitionsChart = () => {
   const [resultsSingleNode, setResultsSingleNode] = useState([]);
   const [resultsMultipleNodes, setResultsMultipleNodes] = useState([]);
+  const [repetitionNumber, setRepetitionNumber] = useState(REPETITIONS);
+  const [iterationNumber, setIterationNumber] = useState(ITERATIONS);
+  const [populationSize, setPopulationSize] = useState(POPULATION_SIZE);
+
+
   const testSingeNode = () => {
     let counter = 0;
-    for (let i = 0; i < REPETITIONS; i++) {
+    for (let i = 0; i < repetitionNumber; i++) {
       const runner = new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
-        populationSize: POPULATION_SIZE,
+        populationSize: populationSize,
         selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
         reportBest: false
       });
@@ -32,7 +38,7 @@ const RepetitionsChart = () => {
       runner.startRunner();
       runner.collaboration.resetGlobalBest();
 
-      for (let i = 0; i < ITERATIONS; i++) {
+      for (let i = 0; i < iterationNumber; i++) {
         runner.tick();
       }
 
@@ -48,10 +54,10 @@ const RepetitionsChart = () => {
 
   const testMultipleNodes = () => {
     let counter = 0;
-    for (let i = 0; i < REPETITIONS; i++) {
+    for (let i = 0; i < repetitionNumber; i++) {
       const runners = [
         new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
-          populationSize: POPULATION_SIZE,
+          populationSize: populationSize,
           selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
           reportBest: false
         })
@@ -60,12 +66,12 @@ const RepetitionsChart = () => {
       runners[0].startRunner();
       runners[0].collaboration.resetGlobalBest();
 
-      for (let i = 0; i < ITERATIONS; i++) {
+      for (let i = 0; i < iterationNumber; i++) {
         const rand = random(0, 1);
         if (rand < 0.05) {
           runners.push(
             new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
-              populationSize: POPULATION_SIZE,
+              populationSize: populationSize,
               selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
               reportBest: false
             })
@@ -101,9 +107,9 @@ const RepetitionsChart = () => {
         position: "bottom",
         type: "linear",
         stacked: true,
-        tickCount: REPETITIONS,
+        tickCount: repetitionNumber,
         range0: 0,
-        range1: REPETITIONS
+        range1: repetitionNumber
       }
     ],
     []
@@ -114,12 +120,42 @@ const RepetitionsChart = () => {
     setResultsMultipleNodes(testMultipleNodes());
   }, []);
 
+  useEffect(() => {
+    setResultsSingleNode(testSingeNode());
+    setResultsMultipleNodes(testMultipleNodes());
+  }, [repetitionNumber, iterationNumber, populationSize]);
+
   return (
     <div className="repetition-results-container">
-      <div>
-        Total repetitions: {REPETITIONS} <br />
-        Iterations for a repetition: {ITERATIONS} <br />
-        Population size: {POPULATION_SIZE} <br />
+      <div className="subtitle">Successfully found minimums:</div>
+      <div className="report-controls">
+        <div className="repetitions">
+          Repetitions:
+          <NumericInput
+            min={0}
+            max={1000}
+            value={repetitionNumber}
+            onChange={value => setRepetitionNumber(value)}
+          />
+        </div>
+        <div className="iterations">
+          Algorithm Iterations:
+          <NumericInput
+            min={0}
+            max={1000}
+            value={iterationNumber}
+            onChange={value => setIterationNumber(value)}
+          />
+        </div>
+        <div className="population">
+          Population Size:
+          <NumericInput
+            min={0}
+            max={1000}
+            value={populationSize}
+            onChange={value => setPopulationSize(value)}
+          />
+        </div>
       </div>
       <div className="repetition-results">
         <Chart

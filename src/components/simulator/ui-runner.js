@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 import FunctionPlotter3D from "./plotters/plot3D";
 import FunctionPlotter2D from "./plotters/plot2D";
 import TopParticles from "./top-particles/topParticles";
@@ -67,7 +69,7 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
 
   const onLocallyChangeAlgorithmCallback = algorithmTag => {
     runner.locallyChangeSpecifications({ algorithmTag });
-  }
+  };
 
   const resetUI = () => {
     setIterations(0);
@@ -92,6 +94,8 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
     }, time || updateInterval);
     setIntervalRef(interval);
   };
+
+  const destroyInstance = () => {};
 
   useEffect(() => {
     runner.registerSpecificationChangesCallback(resetUI);
@@ -139,6 +143,9 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
         localAlgorithmTag={runner.options.localAlgorithmTag}
       />
       <Status iterations={iterations} />
+      <Link className="goto-reports" to="/reports" onClick={destroyInstance}>
+        <div className="btn">See reports</div>
+      </Link>
     </div>
   );
 }

@@ -1,5 +1,14 @@
 .repetition-results-container {
-  margin-bottom: 50px;
+  width: calc(94% - 20px);
+  margin: 50px 3%;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.repetition-results-container .subtitle {
+  font-size: 24px;
+  padding-bottom: 20px;
 }
 
 .repetition-results {

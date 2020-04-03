@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import NumericInput from "react-numeric-input";
 
 import Runner from "../../../lib/evolution/runner";
 import { random } from "../../../lib/utils/utils";
@@ -13,18 +14,20 @@ import {
   SELECTION_FUNCTIONS
 } from "../../../lib/utils/constants";
 
-const ITERATIONS = 500;
+const ITERATIONS = 100;
 const POPULATION_SIZE = 5;
 
 const ClosenessChart = () => {
   const [resultsSingleNode, setResultsSingleNode] = useState([]);
   const [resultsMultipleNodes, setResultsMultipleNodes] = useState([]);
+  const [iterationNumber, setIterationNumber] = useState(ITERATIONS);
+  const [populationSize, setPopulationSize] = useState(POPULATION_SIZE);
 
   const testSingeNode = () => {
     const results = [];
 
     const runner = new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
-      populationSize: POPULATION_SIZE,
+      populationSize: populationSize,
       selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
       reportBest: false
     });
@@ -32,7 +35,7 @@ const ClosenessChart = () => {
     runner.startRunner();
     runner.collaboration.resetGlobalBest();
 
-    for (let i = 0; i < ITERATIONS; i++) {
+    for (let i = 0; i < iterationNumber; i++) {
       runner.tick();
       results.push({
         x: i,
@@ -50,7 +53,7 @@ const ClosenessChart = () => {
 
     const runners = [
       new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
-        populationSize: POPULATION_SIZE,
+        populationSize: populationSize,
         selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
         reportBest: false
       })
@@ -59,12 +62,12 @@ const ClosenessChart = () => {
     runners[0].startRunner();
     runners[0].collaboration.resetGlobalBest();
 
-    for (let i = 0; i < ITERATIONS; i++) {
+    for (let i = 0; i < iterationNumber; i++) {
       const rand = random(0, 1);
       if (rand < 0.05) {
         runners.push(
           new Runner(ALGORITHMS.PSO, FUNCTIONS.FF_RASTRIGIN, {
-            populationSize: POPULATION_SIZE,
+            populationSize: populationSize,
             selectionFunction: SELECTION_FUNCTIONS.TOURNAMENT,
             reportBest: false
           })
@@ -94,7 +97,13 @@ const ClosenessChart = () => {
   );
   const axes = useMemo(
     () => [
-      { primary: true, type: "linear", position: "bottom", showGrid: true, showTicks: true },
+      {
+        primary: true,
+        type: "linear",
+        position: "bottom",
+        showGrid: true,
+        showTicks: true
+      },
       { type: "linear", position: "left", showGrid: true, showTicks: true }
     ],
     []
@@ -105,11 +114,33 @@ const ClosenessChart = () => {
     setResultsMultipleNodes(testMultipleNodes());
   }, []);
 
+  useEffect(() => {
+    setResultsSingleNode(testSingeNode());
+    setResultsMultipleNodes(testMultipleNodes());
+  }, [iterationNumber, populationSize]);
+
   return (
     <div className="closeness-results-container">
-      <div>
-        Iterations for a repetition: {ITERATIONS} <br />
-        Population size: {POPULATION_SIZE} <br />
+      <div className="subtitle">Evolution to global minimum:</div>
+      <div className="report-controls">
+        <div className="iterations">
+          Algorithm Iterations:
+          <NumericInput
+            min={0}
+            max={1000}
+            value={iterationNumber}
+            onChange={value => setIterationNumber(value)}
+          />
+        </div>
+        <div className="population">
+          Population Size:
+          <NumericInput
+            min={0}
+            max={1000}
+            value={populationSize}
+            onChange={value => setPopulationSize(value)}
+          />
+        </div>
       </div>
       <div className="closeness-results">
         <Chart

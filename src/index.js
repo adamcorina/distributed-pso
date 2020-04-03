@@ -3,14 +3,14 @@ import ReactDOM from "react-dom";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 
 import Simulator from "./components/simulator/simulator";
-import Results from "./components/results/results";
+import Reports from "./components/reports/reports";
 
 var mountNode = document.getElementById("app");
 ReactDOM.render(
   <Router>
     <Switch>
-      <Route path="/results">
-        <Results />
+      <Route path="/reports">
+        <Reports />
       </Route>
       <Route path="/">
         <Simulator />

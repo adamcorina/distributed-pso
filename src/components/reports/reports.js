@@ -2,15 +2,16 @@ import React from "react";
 import RepetitionsChart from "./repetitions/repetitions";
 import ClosenessChart from "./closeness/closeness";
 
-import "./results.css";
+import "./reports.css";
 
-const Results = () => {
+const Reports = () => {
   return (
-    <div className="results">
+    <div className="reports">
+      <div className="title">Reports</div>
       <RepetitionsChart />
       <ClosenessChart />
     </div>
   );
 };
 
-export default Results;
+export default Reports;
