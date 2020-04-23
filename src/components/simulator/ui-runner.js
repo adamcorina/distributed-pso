@@ -14,6 +14,8 @@ const PLAY_STATE = {
   PAUSE: "Pause"
 };
 
+let interval = null;
+
 export function CanvasPlotter({ population, ff, iteration }) {
   return ff.dimensions.length === 2 ? (
     <FunctionPlotter3D population={population} ff={ff} iteration={iteration} />
@@ -24,7 +26,6 @@ export function CanvasPlotter({ population, ff, iteration }) {
 
 export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
   const timestamp = Date.now();
-  let interval = null;
   const [iterations, setIterations] = useState(0);
   const [plotters, setPlotters] = useState([
     { type: "canvas", key: "canvas" + timestamp },
@@ -36,6 +37,7 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
 
   const onClickPauseCallback = () => {
     if (playState === PLAY_STATE.PAUSE) {
+      clearInterval(interval);
       clearInterval(intervalRef);
       setPlayState(PLAY_STATE.RESUME);
     } else {
@@ -100,7 +102,10 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
   useEffect(() => {
     runner.registerSpecificationChangesCallback(resetUI);
     runner.startRunner();
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearInterval(intervalRef);
+    }
   }, []);
 
   return (
