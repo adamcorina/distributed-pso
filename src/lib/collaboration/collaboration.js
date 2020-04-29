@@ -1,52 +1,51 @@
-const Gun = require("gun/gun");
-require("gun/lib/not.js");
-require("gun/sea");
-
-import {numberRounding} from "../utils/utils"
+import { numberRounding } from "../utils/utils";
 
 export default class Collaboration {
-  constructor(algorithmTag) {
-    this.collaborativeBest = null;
-    this.gun = Gun(location.origin + "/gun");
-    this.algorithmTag = algorithmTag
-  }
-  initialize(algorithm) {
-    this.gun.get(`global-minimum-${this.algorithmTag}`).not(key => {
-      this.gun.get(key).put({
-        position: Object.assign({}, [...algorithm.bestPosition])
-      });
-    });
-    this.gun
-      .get(`global-minimum-${this.algorithmTag}`)
-      .get("position")
-      .once(position => {
-        let { _, ...coordinates } = position;
-        this.collaborativeBest = Object.values(coordinates);
-      });
+  constructor() {
+    if (!!Collaboration.instance) {
+      return Collaboration.instance;
+    }
 
-    this.gun.get(`global-minimum-${this.algorithmTag}`).on(() => {
-      this.gun
-        .get(`global-minimum-${this.algorithmTag}`)
-        .get("position")
-        .once(position => {
-          let { _, ...coordinates } = position;
-          this.collaborativeBest = Object.values(coordinates);
-        });
-    });
+    Collaboration.instance = this;
+
+    this.collaborativeBest = null;
+
+    return this;
+  }
+
+  resetGlobalBest() {
+    this.collaborativeBest = [
+      Number.MAX_VALUE,
+      Number.MAX_VALUE,
+      Number.MAX_VALUE
+    ];
   }
 
   render(algorithm) {
-    const bestToIntroduce = [...this.collaborativeBest];
-    if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce.slice(-1)[0]) {
-      algorithm.population.replaceWorstParticle(bestToIntroduce);
+    if (!this.collaborativeBest) {
+      return;
+    }
+    const bestToIntroduceCoordinates = [...this.collaborativeBest];
+    const bestToIntroduce = bestToIntroduceCoordinates.pop();
+
+    if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce) {
+      if (
+        algorithm.population.ff.compute(...bestToIntroduceCoordinates) ===
+        bestToIntroduce
+      ) {
+        algorithm.population.replaceWorstParticle([
+          ...bestToIntroduceCoordinates,
+          bestToIntroduce
+        ]);
+      } else {
+        this.collaborativeBest = [...algorithm.bestPosition];
+      }
     } else {
       if (
-        numberRounding(bestToIntroduce.slice(-1)[0], 5) >
+        numberRounding(bestToIntroduce, 5) >
         numberRounding(algorithm.bestPosition.slice(-1)[0], 5)
       ) {
-        this.gun.get(`global-minimum-${this.algorithmTag}`).put({
-          position: Object.assign({}, [...algorithm.bestPosition])
-        });
+        this.collaborativeBest = [...algorithm.bestPosition];
       }
     }
   }

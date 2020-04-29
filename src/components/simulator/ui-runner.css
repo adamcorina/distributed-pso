@@ -1,0 +1,23 @@
+.runner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.runner .goto-reports {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  text-decoration: none;
+  color: black;
+}
+
+.runner .btn {
+    height: 36px;
+    background-color: white;
+    text-align: center;
+    line-height: 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0 10px;
+  }

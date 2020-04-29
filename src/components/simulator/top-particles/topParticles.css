@@ -1,0 +1,25 @@
+.top-particles {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  border-collapse: collapse;
+  border-radius: 4px;
+  border-style: hidden; /* hide standard table (collapsed) border */
+  box-shadow: 0 0 0 2px #8d8c8cb2;
+  cursor: move;
+}
+
+.top-particles tr,
+.top-particles td {
+  border: 1px solid #8d8c8cb2;
+  padding: 6px;
+}
+
+.top-particles td {
+  width: 220px;
+}
+
+.top-particles thead td {
+  background-color: #8d8c8cb2;
+  text-transform: uppercase;
+}

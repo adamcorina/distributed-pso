@@ -1,0 +1,22 @@
+.closeness-results-container {
+  width: calc(90% - 20px);
+  margin: 50px 5%;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.closeness-results-container .subtitle {
+  font-size: 24px;
+  padding-bottom: 20px;
+}
+
+.closeness-results {
+  height: 700px;
+  width: 100%;
+  position: relative;
+}
+
+.closeness-results .ReactChart{
+  width: 100% !important;
+}

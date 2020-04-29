@@ -1,6 +1,5 @@
 import * as THREE from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
-
 import React, { useEffect, useRef } from "react";
 
 export default function FunctionPlotter3D({ population, ff, iteration }) {
@@ -11,7 +10,7 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
     return Math.max(size.x, size.y, size.z);
   };
 
-  const createGraphGeometry = (segments) => {
+  const createGraphGeometry = segments => {
     const xMin = ff.dimensions[0].min;
     const xMax = ff.dimensions[0].max;
     const yMin = ff.dimensions[1].min;
@@ -61,7 +60,7 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
     }
 
     return graphGeometry;
-  }
+  };
 
   const plotGraphMesh = (scene, graphGeometry, segments) => {
     const wireTexture = new THREE.ImageUtils.loadTexture("images/square.png");
@@ -80,14 +79,16 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
     const graphMesh = new THREE.Mesh(graphGeometry, wireMaterial);
     graphMesh.doubleSided = true;
     scene.add(graphMesh);
-  }
+
+    return graphMesh;
+  };
 
   const zoomToFitScreen = (camera, graphGeometry) => {
     const maxDim = getMaxSizeBoundingBox(graphGeometry);
 
     const fov = camera.fov * (Math.PI / 180);
     let cameraZ = Math.abs((maxDim / 4) * Math.tan(fov * 2));
-    cameraZ *= 1.3; 
+    cameraZ *= 1.3;
 
     camera.position.z = cameraZ;
 
@@ -99,14 +100,14 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
 
     const center = graphGeometry.boundingBox.getCenter();
     camera.lookAt(center);
-  }
+  };
 
   const addParticles = (scene, graphGeometry) => {
     const maxDim = getMaxSizeBoundingBox(graphGeometry);
 
     population.individuals.forEach(particle => {
       const geometry = new THREE.SphereGeometry(maxDim * 0.005, 16, 16);
-      const material = new THREE.MeshLambertMaterial({ color: 0x530296 });
+      const material = new THREE.MeshLambertMaterial({ color: 0x000000 });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(
         particle.position[0],
@@ -116,17 +117,17 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
       particle.domMeshReference = mesh;
       scene.add(mesh);
     });
-  }
+  };
 
-  useEffect(() => {
+  const initialize = () => {
     const width = mount.current.clientWidth;
     const height = mount.current.clientHeight;
     let frameId;
     const segments = 80;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 100000);
 
     const renderScene = () => {
       renderer.render(scene, camera);
@@ -145,12 +146,20 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
     new OrbitControls(camera, renderer.domElement);
 
     const graphGeometry = createGraphGeometry(segments);
-    plotGraphMesh(scene, graphGeometry, segments);
+    const graphMesh = plotGraphMesh(scene, graphGeometry, segments);
 
     zoomToFitScreen(camera, graphGeometry);
-    
+
     // add axes
-    const axesHelper = new THREE.AxesHelper(getMaxSizeBoundingBox(graphGeometry));
+    const axesHelper = new THREE.AxesHelper(
+      getMaxSizeBoundingBox(graphGeometry)
+    );
+
+    var colors = axesHelper.geometry.attributes.color;
+    colors.setXYZ(1, 255, 255, 255);
+    colors.setXYZ(3, 255, 255, 255);
+    colors.setXYZ(5, 255, 255, 255);
+
     scene.add(axesHelper);
 
     addParticles(scene, graphGeometry);
@@ -187,27 +196,45 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
     return () => {
       stop();
       window.removeEventListener("resize", handleResize);
-      mount.current.removeChild(renderer.domElement);
 
+      graphMesh.material.dispose();
+      graphMesh.geometry.dispose();
       scene.remove(graphMesh);
-      geometry.dispose();
-      material.dispose();
+
+      population.individuals.forEach(particle => {
+        particle.domMeshReference.material.dispose();
+        particle.domMeshReference.geometry.dispose();
+        scene.remove(particle.domMeshReference);
+      });
+
+      renderer.renderLists.dispose();
+      mount.current.removeChild(renderer.domElement);
     };
+  };
+
+  useEffect(() => {
+    return initialize();
   }, []);
 
   useEffect(() => {
     const updateParticle = function(mesh, coordinates, color) {
-      mesh.position.x = coordinates[0];
-      mesh.position.y = coordinates[1];
-      mesh.position.z = coordinates[2];
-      color && mesh.material.color.setHex(color);
+      if (mesh) {
+        mesh.position.x = coordinates[0];
+        mesh.position.y = coordinates[1];
+        mesh.position.z = coordinates[2];
+        color && mesh.material.color.setHex(color);
+      }
     };
 
     for (let i = 0; i < population.individuals.length; i++) {
       // move plotted particles to their next position
       const particle = population.individuals[i];
       const coordinates = [...particle.position, particle.fitness];
-      updateParticle(particle.domMeshReference, coordinates, particle.isReplaced ? 0xffe100 : null);
+      updateParticle(
+        particle.domMeshReference,
+        coordinates,
+        particle.isReplaced ? 0xffe100 : null
+      );
     }
   }, [iteration]);
 
