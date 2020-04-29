@@ -18,13 +18,13 @@ export default class GA {
   }
 
   updateGlobalBest() {
-    if(!this.population.individuals.length){
+    if (!this.population.individuals.length) {
       return;
     }
 
     this.bestPosition = [
       ...this.population.individuals[0].bestPosition,
-      this.population.individuals[0].bestFitness
+      this.population.individuals[0].bestFitness,
     ];
 
     for (let i = 1; i < this.population.individuals.length; i++) {
@@ -34,7 +34,7 @@ export default class GA {
       ) {
         this.bestPosition = [
           ...this.population.individuals[i].bestPosition,
-          this.population.individuals[i].bestFitness
+          this.population.individuals[i].bestFitness,
         ];
       }
     }
@@ -69,10 +69,21 @@ export default class GA {
       }
       //mutation
       for (let j = 0; j < this.dimensions.length; j++) {
-        const rand = random(0, 1);
+        let rand = random(0, 1);
         if (rand < 0.1) {
           const interval = this.dimensions[j].max - this.dimensions[j].min;
-          child.position[j] += random(0, interval * 0.005);
+          rand = random(0, 1);
+          if (rand < 0.5) {
+            child.position[j] += random(0, interval * 0.005);
+          } else {
+            child.position[j] -= random(0, interval * 0.005);
+          }
+          if (child.position[j] > this.dimensions[j].max) {
+            child.position[j] = this.dimensions[j].max;
+          }
+          if (child.position[j] < this.dimensions[j].min) {
+            child.position[j] = this.dimensions[j].min;
+          }
         }
       }
     }
