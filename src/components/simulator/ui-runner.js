@@ -7,11 +7,13 @@ import TopParticles from "./top-particles/topParticles";
 import Controls from "./controls/controls";
 import Status from "./status/status";
 
+import { POPULATION_BASED_ALGORITHMS } from "../../lib/utils/constants";
+
 import "./ui-runner.css";
 
 const PLAY_STATE = {
   RESUME: "Resume",
-  PAUSE: "Pause"
+  PAUSE: "Pause",
 };
 
 let interval = null;
@@ -29,7 +31,7 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
   const [iterations, setIterations] = useState(0);
   const [plotters, setPlotters] = useState([
     { type: "canvas", key: "canvas" + timestamp },
-    { type: "table", key: "table" + timestamp }
+    { type: "table", key: "table" + timestamp },
   ]);
   const [intervalRef, setIntervalRef] = useState(null);
   const [playState, setPlayState] = useState(PLAY_STATE.PAUSE);
@@ -50,26 +52,30 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
     runner.resetRunner();
   };
 
-  const onChangeAlgorithmCallback = algorithmTag => {
-    runner.changeSpecifications({ algorithmTag });
+  const onChangeAlgorithmCallback = (algorithmTag) => {
+    if (!POPULATION_BASED_ALGORITHMS.includes(algorithmTag)) {
+      runner.changeSpecifications({ algorithmTag, populationSize: 1 });
+    } else {
+      runner.changeSpecifications({ algorithmTag });
+    }
   };
 
-  const onChangeFunctionCallback = functionTag => {
+  const onChangeFunctionCallback = (functionTag) => {
     runner.changeSpecifications({ functionTag });
   };
 
-  const onChangeUpdateIntervalCallback = intervalValue => {
+  const onChangeUpdateIntervalCallback = (intervalValue) => {
     setUpdateInterval(intervalValue);
     if (playState === PLAY_STATE.PAUSE) {
       run(intervalValue);
     }
   };
 
-  const onChangePopulationSize = populationSize => {
+  const onChangePopulationSize = (populationSize) => {
     runner.changeSpecifications({ populationSize });
   };
 
-  const onLocallyChangeAlgorithmCallback = algorithmTag => {
+  const onLocallyChangeAlgorithmCallback = (algorithmTag) => {
     runner.locallyChangeSpecifications({ algorithmTag });
   };
 
@@ -80,19 +86,19 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
     const timestamp = Date.now();
     setPlotters([
       { type: "canvas", key: "canvas" + timestamp },
-      { type: "table", key: "table" + timestamp }
+      { type: "table", key: "table" + timestamp },
     ]);
 
     run();
   };
 
-  const run = time => {
+  const run = (time) => {
     clearInterval(interval);
     clearInterval(intervalRef);
 
     interval = setInterval(() => {
       runner.tick();
-      setIterations(iterations => iterations + 1);
+      setIterations((iterations) => iterations + 1);
     }, time || updateInterval);
     setIntervalRef(interval);
   };
@@ -105,30 +111,20 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
     return () => {
       clearInterval(interval);
       clearInterval(intervalRef);
-    }
+    };
   }, []);
 
   return (
     <div className="runner">
-      {plotters.map(plotter => {
+      {plotters.map((plotter) => {
         if (plotter.type === "canvas") {
           return (
-            <CanvasPlotter
-              key={plotter.key}
-              population={runner.population}
-              ff={runner.ff}
-              iteration={iterations}
-            />
+            <CanvasPlotter key={plotter.key} population={runner.population} ff={runner.ff} iteration={iterations} />
           );
         }
         if (plotter.type === "table") {
           return (
-            <TopParticles
-              key={plotter.key}
-              population={runner.population}
-              ff={runner.ff}
-              iteration={iterations}
-            />
+            <TopParticles key={plotter.key} population={runner.population} ff={runner.ff} iteration={iterations} />
           );
         }
       })}

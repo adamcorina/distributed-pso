@@ -4,7 +4,7 @@ import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import NumericInput from "react-numeric-input";
 
-import { ALGORITHMS, FUNCTIONS } from "../../../lib/utils/constants";
+import { ALGORITHMS, FUNCTIONS, POPULATION_BASED_ALGORITHMS } from "../../../lib/utils/constants";
 
 import "./controls.css";
 
@@ -23,12 +23,10 @@ const Controls = ({
   functionTag,
   updateInterval,
   populationSize,
-  localAlgorithmTag
+  localAlgorithmTag,
 }) => {
-  const [localPopulationSize, updateLocalPopulationSize] = useState(
-    populationSize
-  );
-  const onPopulationChange = newSize => {
+  const [localPopulationSize, updateLocalPopulationSize] = useState(populationSize);
+  const onPopulationChange = (newSize) => {
     updateLocalPopulationSize(newSize);
   };
 
@@ -63,7 +61,7 @@ const Controls = ({
             <Dropdown
               options={Object.values(ALGORITHMS)}
               value={algorithmTag}
-              onChange={e => {
+              onChange={(e) => {
                 changeAlgorithm(e.value);
               }}
             />
@@ -77,7 +75,7 @@ const Controls = ({
             <Dropdown
               options={Object.values(FUNCTIONS)}
               value={functionTag}
-              onChange={e => {
+              onChange={(e) => {
                 changeFunction(e.value);
               }}
             />
@@ -93,8 +91,9 @@ const Controls = ({
               max={200}
               value={localPopulationSize}
               onChange={onPopulationChange}
-              onKeyDown={e => e.stopPropagation()}
-              onFocus={e => e.stopPropagation()}
+              onKeyDown={(e) => e.stopPropagation()}
+              onFocus={(e) => e.stopPropagation()}
+              disabled={!POPULATION_BASED_ALGORITHMS.includes(algorithmTag) ? true : false}
             />
             <div className="btn" onClick={propagatePopulationSizeChange}>
               Update
@@ -131,15 +130,10 @@ const Controls = ({
           </td>
           <td colspan="2" className="speed-controls">
             <div
-              className={`btn ${
-                updateInterval + STEP > 5000 ? "disabled" : ""
-              }`}
+              className={`btn ${updateInterval + STEP > 5000 ? "disabled" : ""}`}
               onClick={() => {
                 let newUpdateInterval = updateInterval;
-                newUpdateInterval =
-                  newUpdateInterval + STEP < 5000
-                    ? newUpdateInterval + STEP
-                    : newUpdateInterval;
+                newUpdateInterval = newUpdateInterval + STEP < 5000 ? newUpdateInterval + STEP : newUpdateInterval;
                 changeUpdateInterval(newUpdateInterval);
               }}
             >
@@ -150,10 +144,7 @@ const Controls = ({
               className={`btn ${updateInterval - STEP < 0 ? "disabled" : ""}`}
               onClick={() => {
                 let newUpdateInterval = updateInterval;
-                newUpdateInterval =
-                  newUpdateInterval - STEP > 0
-                    ? newUpdateInterval - STEP
-                    : newUpdateInterval;
+                newUpdateInterval = newUpdateInterval - STEP > 0 ? newUpdateInterval - STEP : newUpdateInterval;
                 changeUpdateInterval(newUpdateInterval);
               }}
             >
@@ -169,7 +160,7 @@ const Controls = ({
             <Dropdown
               options={Object.values(ALGORITHMS)}
               value={localAlgorithmTag}
-              onChange={e => {
+              onChange={(e) => {
                 locallyChangeAlgorithm(e.value);
               }}
             />

@@ -2,7 +2,8 @@ const Gun = require("gun/gun");
 require("gun/lib/not.js");
 require("gun/sea");
 
-import { numberRounding } from "../utils/utils";
+import { numberRounding, random } from "../utils/utils";
+import { POPULATION_BASED_ALGORITHMS } from "../utils/constants";
 
 export default class DistributedCollaboration {
   constructor(algorithmTag, functionTag, populationSize, onChangesCallback) {
@@ -22,7 +23,7 @@ export default class DistributedCollaboration {
         this.gun
           .get("global-minimum")
           .get("position")
-          .once(position => {
+          .once((position) => {
             let { _, ...coordinates } = position;
             this.collaborativeBest = Object.values(coordinates);
           });
@@ -32,26 +33,26 @@ export default class DistributedCollaboration {
       this.gun
         .get("optimization")
         .get("algorithm")
-        .once(algorithm => {
+        .once((algorithm) => {
           this.algorithmTag = algorithm;
         });
       this.gun
         .get("optimization")
         .get("ff")
-        .once(ff => {
+        .once((ff) => {
           this.functionTag = ff;
         });
       this.gun
         .get("optimization")
         .get("populationSize")
-        .once(populationSize => {
+        .once((populationSize) => {
           this.populationSize = populationSize;
         });
 
       this.onChangesCallback({
         algorithmTag: this.algorithmTag,
         functionTag: this.functionTag,
-        populationSize: this.populationSize
+        populationSize: this.populationSize,
       });
     });
   }
@@ -75,11 +76,7 @@ export default class DistributedCollaboration {
 
   resetGlobalBest() {
     this.gun.get("global-minimum").put({
-      position: Object.assign({}, [
-        Number.MAX_VALUE,
-        Number.MAX_VALUE,
-        Number.MAX_VALUE
-      ])
+      position: Object.assign({}, [Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE]),
     });
   }
 
@@ -87,30 +84,29 @@ export default class DistributedCollaboration {
     if (!this.collaborativeBest) {
       return;
     }
+
     const bestToIntroduceCoordinates = [...this.collaborativeBest];
     const bestToIntroduce = bestToIntroduceCoordinates.pop();
 
     if (algorithm.bestPosition.slice(-1)[0] > bestToIntroduce) {
-      if (
-        algorithm.population.ff.compute(...bestToIntroduceCoordinates) ===
-        bestToIntroduce
-      ) {
-        algorithm.population.replaceWorstParticle([
-          ...bestToIntroduceCoordinates,
-          bestToIntroduce
-        ]);
+      if (algorithm.population.ff.compute(...bestToIntroduceCoordinates) === bestToIntroduce) {
+        const rand = random(0, 1);
+        if (
+          POPULATION_BASED_ALGORITHMS.includes(this.algorithmTag) ||
+          (!POPULATION_BASED_ALGORITHMS.includes(this.algorithmTag) &&
+            1 - algorithm.checkProbability(algorithm.bestPosition.slice(-1)[0], bestToIntroduce, false) > rand)
+        ) {
+          algorithm.population.replaceWorstParticle([...bestToIntroduceCoordinates, bestToIntroduce]);
+        }
       } else {
         this.gun.get("global-minimum").put({
-          position: Object.assign({}, [...algorithm.bestPosition])
+          position: Object.assign({}, [...algorithm.bestPosition]),
         });
       }
     } else {
-      if (
-        numberRounding(bestToIntroduce, 5) >
-        numberRounding(algorithm.bestPosition.slice(-1)[0], 5)
-      ) {
+      if (numberRounding(bestToIntroduce, 5) > numberRounding(algorithm.bestPosition.slice(-1)[0], 5)) {
         this.gun.get("global-minimum").put({
-          position: Object.assign({}, [...algorithm.bestPosition])
+          position: Object.assign({}, [...algorithm.bestPosition]),
         });
       }
     }

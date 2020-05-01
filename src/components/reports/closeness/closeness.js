@@ -8,13 +8,11 @@ import { random } from "../../../lib/utils/utils";
 
 import { Chart } from "react-charts";
 
+import { POPULATION_BASED_ALGORITHMS } from "../../../lib/utils/constants";
+
 import "./closeness.css";
 
-import {
-  ALGORITHMS,
-  FUNCTIONS,
-  SELECTION_FUNCTIONS
-} from "../../../lib/utils/constants";
+import { ALGORITHMS, FUNCTIONS, SELECTION_FUNCTIONS } from "../../../lib/utils/constants";
 
 const ITERATIONS = 300;
 const POPULATION_SIZE = 5;
@@ -25,17 +23,15 @@ const ClosenessChart = () => {
   const [iterationNumber, setIterationNumber] = useState(0);
   const [populationSize, setPopulationSize] = useState(0);
   const [algorithm, setAlgorithm] = useState(ALGORITHMS.PSO);
-  const [optimisationFunction, setOptimisationFunction] = useState(
-    FUNCTIONS.FF_SCHWEFEL
-  );
+  const [optimisationFunction, setOptimisationFunction] = useState(FUNCTIONS.FF_SCHWEFEL);
 
   const testSingeNode = () => {
     const results = [];
 
     const runner = new Runner(algorithm, optimisationFunction, {
-      populationSize: populationSize,
+      populationSize: POPULATION_BASED_ALGORITHMS.includes(algorithm) ? populationSize : 1,
       selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
-      reportBest: false
+      reportBest: false,
     });
 
     runner.startRunner();
@@ -45,9 +41,7 @@ const ClosenessChart = () => {
       runner.tick();
       results.push({
         x: i,
-        y:
-          runner.algorithm.bestPosition.slice(-1)[0] -
-          runner.ff.actualMinimum.slice(-1)[0]
+        y: runner.algorithm.bestPosition.slice(-1)[0] - runner.ff.actualMinimum.slice(-1)[0],
       });
     }
 
@@ -59,10 +53,10 @@ const ClosenessChart = () => {
 
     const runners = [
       new Runner(algorithm, optimisationFunction, {
-        populationSize: populationSize,
+        populationSize: POPULATION_BASED_ALGORITHMS.includes(algorithm) ? populationSize : 1,
         selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
-        reportBest: false
-      })
+        reportBest: false,
+      }),
     ];
 
     runners[0].startRunner();
@@ -73,9 +67,9 @@ const ClosenessChart = () => {
       if (rand < 0.05) {
         runners.push(
           new Runner(algorithm, optimisationFunction, {
-            populationSize: populationSize,
+            populationSize: POPULATION_BASED_ALGORITHMS.includes(algorithm) ? populationSize : 1,
             selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
-            reportBest: false
+            reportBest: false,
           })
         );
         runners[runners.length - 1].startRunner();
@@ -86,9 +80,7 @@ const ClosenessChart = () => {
       }
       results.push({
         x: i,
-        y:
-          runners[0].algorithm.bestPosition.slice(-1)[0] -
-          runners[0].ff.actualMinimum.slice(-1)[0]
+        y: runners[0].algorithm.bestPosition.slice(-1)[0] - runners[0].ff.actualMinimum.slice(-1)[0],
       });
     }
 
@@ -97,7 +89,7 @@ const ClosenessChart = () => {
 
   const series = useMemo(
     () => ({
-      showPoints: false
+      showPoints: false,
     }),
     []
   );
@@ -108,9 +100,9 @@ const ClosenessChart = () => {
         type: "linear",
         position: "bottom",
         showGrid: true,
-        showTicks: true
+        showTicks: true,
       },
-      { type: "linear", position: "left", showGrid: true, showTicks: true }
+      { type: "linear", position: "left", showGrid: true, showTicks: true },
     ],
     []
   );
@@ -135,20 +127,16 @@ const ClosenessChart = () => {
       <div className="report-controls">
         <div className="iterations">
           Algorithm Iterations:
-          <NumericInput
-            min={0}
-            max={1000}
-            value={iterationNumber}
-            onChange={value => setIterationNumber(value)}
-          />
+          <NumericInput min={0} max={1000} value={iterationNumber} onChange={(value) => setIterationNumber(value)} />
         </div>
         <div className="population">
           Population Size:
           <NumericInput
             min={0}
             max={1000}
-            value={populationSize}
-            onChange={value => setPopulationSize(value)}
+            value={POPULATION_BASED_ALGORITHMS.includes(algorithm) ? populationSize : 1}
+            disabled={!POPULATION_BASED_ALGORITHMS.includes(algorithm) ? true : false}
+            onChange={(value) => setPopulationSize(value)}
           />
         </div>
       </div>
@@ -158,7 +146,7 @@ const ClosenessChart = () => {
           <Dropdown
             options={Object.values(ALGORITHMS)}
             value={algorithm}
-            onChange={e => {
+            onChange={(e) => {
               setAlgorithm(e.value);
             }}
           />
@@ -168,7 +156,7 @@ const ClosenessChart = () => {
           <Dropdown
             options={Object.values(FUNCTIONS)}
             value={optimisationFunction}
-            onChange={e => {
+            onChange={(e) => {
               setOptimisationFunction(e.value);
             }}
           />
@@ -184,12 +172,12 @@ const ClosenessChart = () => {
           data={[
             {
               label: "Classic algorithm",
-              data: resultsSingleNode
+              data: resultsSingleNode,
             },
             {
               label: "Distributed algorithm",
-              data: resultsMultipleNodes
-            }
+              data: resultsMultipleNodes,
+            },
           ]}
           series={series}
           axes={axes}

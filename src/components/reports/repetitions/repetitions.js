@@ -5,16 +5,13 @@ import "react-dropdown/style.css";
 
 import Runner from "../../../lib/evolution/runner";
 import { random, numberRounding } from "../../../lib/utils/utils";
+import { POPULATION_BASED_ALGORITHMS } from "../../../lib/utils/constants";
 
 import { Chart } from "react-charts";
 
 import "./repetitions.css";
 
-import {
-  ALGORITHMS,
-  FUNCTIONS,
-  SELECTION_FUNCTIONS
-} from "../../../lib/utils/constants";
+import { ALGORITHMS, FUNCTIONS, SELECTION_FUNCTIONS } from "../../../lib/utils/constants";
 
 const ITERATIONS = 300;
 const POPULATION_SIZE = 5;
@@ -27,17 +24,15 @@ const RepetitionsChart = () => {
   const [iterationNumber, setIterationNumber] = useState(ITERATIONS);
   const [populationSize, setPopulationSize] = useState(POPULATION_SIZE);
   const [algorithm, setAlgorithm] = useState(ALGORITHMS.PSO);
-  const [optimisationFunction, setOptimisationFunction] = useState(
-    FUNCTIONS.FF_RASTRIGIN
-  );
+  const [optimisationFunction, setOptimisationFunction] = useState(FUNCTIONS.FF_RASTRIGIN);
 
   const testSingeNode = () => {
     let counter = 0;
     for (let i = 0; i < repetitionNumber; i++) {
       const runner = new Runner(algorithm, optimisationFunction, {
-        populationSize: populationSize,
+        populationSize: POPULATION_BASED_ALGORITHMS.includes(algorithm) ? populationSize : 1,
         selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
-        reportBest: false
+        reportBest: false,
       });
 
       runner.startRunner();
@@ -46,10 +41,9 @@ const RepetitionsChart = () => {
       for (let i = 0; i < iterationNumber; i++) {
         runner.tick();
       }
-
       if (
-        numberRounding(runner.algorithm.bestPosition.slice(-1)[0], 5) ===
-        numberRounding(runner.ff.actualMinimum.slice(-1)[0], 5)
+        numberRounding(runner.algorithm.bestPosition.slice(-1)[0], 3) ===
+        numberRounding(runner.ff.actualMinimum.slice(-1)[0], 3)
       ) {
         counter++;
       }
@@ -62,10 +56,10 @@ const RepetitionsChart = () => {
     for (let i = 0; i < repetitionNumber; i++) {
       const runners = [
         new Runner(algorithm, optimisationFunction, {
-          populationSize: populationSize,
+          populationSize: POPULATION_BASED_ALGORITHMS.includes(algorithm) ? populationSize : 1,
           selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
-          reportBest: false
-        })
+          reportBest: false,
+        }),
       ];
 
       runners[0].startRunner();
@@ -76,9 +70,9 @@ const RepetitionsChart = () => {
         if (rand < 0.05) {
           runners.push(
             new Runner(algorithm, optimisationFunction, {
-              populationSize: populationSize,
+              populationSize: POPULATION_BASED_ALGORITHMS.includes(algorithm) ? populationSize : 1,
               selectionFunction: SELECTION_FUNCTIONS.ROULETTE,
-              reportBest: false
+              reportBest: false,
             })
           );
           runners[runners.length - 1].startRunner();
@@ -88,10 +82,9 @@ const RepetitionsChart = () => {
           runners[j].tick();
         }
       }
-
       if (
-        numberRounding(runners[0].algorithm.bestPosition.slice(-1)[0], 5) ===
-        numberRounding(runners[0].ff.actualMinimum.slice(-1)[0], 5)
+        numberRounding(runners[0].algorithm.bestPosition.slice(-1)[0], 3) ===
+        numberRounding(runners[0].ff.actualMinimum.slice(-1)[0], 3)
       ) {
         counter++;
       }
@@ -101,7 +94,7 @@ const RepetitionsChart = () => {
 
   const series = useMemo(
     () => ({
-      type: "bar"
+      type: "bar",
     }),
     []
   );
@@ -114,8 +107,8 @@ const RepetitionsChart = () => {
         stacked: true,
         tickCount: repetitionNumber,
         range0: 0,
-        range1: repetitionNumber
-      }
+        range1: repetitionNumber,
+      },
     ],
     []
   );
@@ -131,13 +124,7 @@ const RepetitionsChart = () => {
 
   useEffect(() => {
     recalculate();
-  }, [
-    repetitionNumber,
-    iterationNumber,
-    populationSize,
-    algorithm,
-    optimisationFunction
-  ]);
+  }, [repetitionNumber, iterationNumber, populationSize, algorithm, optimisationFunction]);
 
   return (
     <div className="repetition-results-container">
@@ -145,29 +132,20 @@ const RepetitionsChart = () => {
       <div className="report-controls">
         <div className="repetitions">
           Repetitions:
-          <NumericInput
-            min={0}
-            max={1000}
-            value={repetitionNumber}
-            onChange={value => setRepetitionNumber(value)}
-          />
+          <NumericInput min={0} max={1000} value={repetitionNumber} onChange={(value) => setRepetitionNumber(value)} />
         </div>
         <div className="iterations">
           Algorithm Iterations:
-          <NumericInput
-            min={0}
-            max={1000}
-            value={iterationNumber}
-            onChange={value => setIterationNumber(value)}
-          />
+          <NumericInput min={0} max={1000} value={iterationNumber} onChange={(value) => setIterationNumber(value)} />
         </div>
         <div className="population">
           Population Size:
           <NumericInput
             min={0}
             max={1000}
-            value={populationSize}
-            onChange={value => setPopulationSize(value)}
+            value={POPULATION_BASED_ALGORITHMS.includes(algorithm) ? populationSize : 1}
+            disabled={!POPULATION_BASED_ALGORITHMS.includes(algorithm) ? true : false}
+            onChange={(value) => setPopulationSize(value)}
           />
         </div>
       </div>
@@ -177,7 +155,7 @@ const RepetitionsChart = () => {
           <Dropdown
             options={Object.values(ALGORITHMS)}
             value={algorithm}
-            onChange={e => {
+            onChange={(e) => {
               setAlgorithm(e.value);
             }}
           />
@@ -187,7 +165,7 @@ const RepetitionsChart = () => {
           <Dropdown
             options={Object.values(FUNCTIONS)}
             value={optimisationFunction}
-            onChange={e => {
+            onChange={(e) => {
               setOptimisationFunction(e.value);
             }}
           />
@@ -203,12 +181,12 @@ const RepetitionsChart = () => {
           data={[
             {
               label: "Classic algorithm",
-              data: resultsSingleNode
+              data: resultsSingleNode,
             },
             {
               label: "Distributed algorithm",
-              data: resultsMultipleNodes
-            }
+              data: resultsMultipleNodes,
+            },
           ]}
           series={series}
           axes={axes}

@@ -7,11 +7,11 @@ import Collaboration from "../collaboration/collaboration";
 export default class Runner {
   constructor(algorithmTag, functionTag, options) {
     this.options = {
-      populationSize: 2,
+      populationSize: 1,
       algorithmTag: algorithmTag,
       localAlgorithmTag: algorithmTag,
       functionTag: functionTag,
-      reportBest: true
+      reportBest: true,
     };
     Object.assign(this.options, options);
 
@@ -30,7 +30,7 @@ export default class Runner {
         this.onSpecificationChanges.bind(this)
       );
     } else {
-      this.collaboration = new Collaboration();
+      this.collaboration = new Collaboration(algorithmTag);
     }
   }
 
@@ -56,14 +56,11 @@ export default class Runner {
     if (options.algorithmTag) {
       this.options.localAlgorithmTag = options.algorithmTag;
       this.population = new Population(this.options.populationSize, this.ff);
-      this.algorithm = new algorithmMap[this.options.localAlgorithmTag](
-        this.ff,
-        this.options
-      );
+      this.algorithm = new algorithmMap[this.options.localAlgorithmTag](this.ff, this.options);
       this.algorithm.setPopulation(this.population);
     }
 
-    this.onSpecificationChangesCallbacks.forEach(callback => {
+    this.onSpecificationChangesCallbacks.forEach((callback) => {
       callback();
     });
   }
@@ -75,13 +72,10 @@ export default class Runner {
     this.options.populationSize = options.populationSize;
     this.ff = new functionMap[this.options.functionTag]();
     this.population = new Population(this.options.populationSize, this.ff);
-    this.algorithm = new algorithmMap[this.options.algorithmTag](
-      this.ff,
-      this.options
-    );
+    this.algorithm = new algorithmMap[this.options.algorithmTag](this.ff, this.options);
     this.algorithm.setPopulation(this.population);
 
-    this.onSpecificationChangesCallbacks.forEach(callback => {
+    this.onSpecificationChangesCallbacks.forEach((callback) => {
       callback();
     });
   }
