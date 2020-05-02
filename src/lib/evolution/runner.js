@@ -55,10 +55,13 @@ export default class Runner {
   locallyChangeSpecifications(options) {
     if (options.algorithmTag) {
       this.options.localAlgorithmTag = options.algorithmTag;
-      this.population = new Population(this.options.populationSize, this.ff);
-      this.algorithm = new algorithmMap[this.options.localAlgorithmTag](this.ff, this.options);
-      this.algorithm.setPopulation(this.population);
     }
+    if (options.populationSize) {
+      this.options.populationSize = options.populationSize;
+    }
+    this.population = new Population(this.options.populationSize, this.ff);
+    this.algorithm = new algorithmMap[this.options.localAlgorithmTag](this.ff, this.options);
+    this.algorithm.setPopulation(this.population);
 
     this.onSpecificationChangesCallbacks.forEach((callback) => {
       callback();

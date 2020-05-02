@@ -76,7 +76,11 @@ export default function UIRunner({ runner, initialUpdateInterval = 150 }) {
   };
 
   const onLocallyChangeAlgorithmCallback = (algorithmTag) => {
-    runner.locallyChangeSpecifications({ algorithmTag });
+    if (!POPULATION_BASED_ALGORITHMS.includes(algorithmTag)) {
+      runner.locallyChangeSpecifications({ algorithmTag, populationSize: 1 });
+    } else {
+      runner.locallyChangeSpecifications({ algorithmTag });
+    }
   };
 
   const resetUI = () => {
