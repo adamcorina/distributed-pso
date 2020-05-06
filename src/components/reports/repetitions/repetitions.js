@@ -15,7 +15,7 @@ import { ALGORITHMS, FUNCTIONS, SELECTION_FUNCTIONS } from "../../../lib/utils/c
 
 const ITERATIONS = 300;
 const POPULATION_SIZE = 5;
-const REPETITIONS = 30;
+const REPETITIONS = 50;
 
 const RepetitionsChart = () => {
   const [resultsSingleNode, setResultsSingleNode] = useState([]);

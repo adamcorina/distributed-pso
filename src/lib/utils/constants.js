@@ -10,6 +10,8 @@ const FUNCTIONS = {
   FF_SPHERE: "FF_Sphere",
   FF_RASTRIGIN: "FF_Rastrigin",
   FF_SCHWEFEL: "FF_Schwefel",
+  FF_ACKLEY: "FF_Ackley",
+  FF_EGGHOLDER: "FF_Eggholder",
   FF_2D: "FF_2D"
 };
 

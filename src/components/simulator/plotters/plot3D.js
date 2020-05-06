@@ -123,7 +123,7 @@ export default function FunctionPlotter3D({ population, ff, iteration }) {
     const width = mount.current.clientWidth;
     const height = mount.current.clientHeight;
     let frameId;
-    const segments = 80;
+    const segments = 120;
 
     const scene = new THREE.Scene();
     const renderer = new THREE.WebGLRenderer({ antialias: true });
