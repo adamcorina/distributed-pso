@@ -9,9 +9,14 @@ import "./reports.css";
 const Reports = () => {
   return (
     <div className="reports">
-      <Link className="goto-simulator" to="/">
-        <div className="btn">Go to simulator</div>
-      </Link>
+      <div
+        className="goto-simulator btn"
+        onClick={() => {
+          window.location.href = "/";
+        }}
+      >
+        Go to simulator
+      </div>
       <div className="title">Reports</div>
       <RepetitionsChart />
       <ClosenessChart />
