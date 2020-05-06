@@ -93,7 +93,7 @@ const Controls = ({
               onChange={onPopulationChange}
               onKeyDown={(e) => e.stopPropagation()}
               onFocus={(e) => e.stopPropagation()}
-              disabled={!POPULATION_BASED_ALGORITHMS.includes(localAlgorithmTag) ? true : false}
+              disabled={!POPULATION_BASED_ALGORITHMS.includes(algorithmTag) ? true : false}
             />
             <div className="btn" onClick={propagatePopulationSizeChange}>
               Update
